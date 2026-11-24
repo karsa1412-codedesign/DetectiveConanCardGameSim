@@ -6,7 +6,9 @@ Es independiente de CardScraper: no comparte código con él.
 
 Estado: **fase 1 en marcha**. El motor aplica el reglamento oficial Ver. 2.6. Hay perfiles de
 usuario, registro de accesos y dos modos de juego: **Tutorial** (partida guiada pregrabada) y
-**Partida local** (dos jugadores en el mismo equipo). Los efectos impresos de las cartas se aplican a mano.
+**Partida local** (dos jugadores en el mismo equipo). Las habilidades de las cartas descargadas se
+interpretan a partir de su texto oficial y se aplican solas; las que aún no se entienden se muestran
+para aplicarlas a mano.
 
 ## Perfiles y modos de juego
 
@@ -130,8 +132,14 @@ instalador en `salida\` (necesita Inno Setup 6). Para probar el código sin comp
 
 - **Acciones posibles** (derecha): solo aparecen las que el reglamento permite en ese
   momento, incluidas las respuestas del rival (Guardia, Pista falsa, Contacto).
-- **Pulsar una carta**: muestra sus acciones y las **herramientas manuales** (mover a la
-  mano, al descarte, a FILE, dormir, aturdir, AP ±1000…) para aplicar efectos de carta.
+- **Pulsar una carta**: muestra sus acciones (también «Declarar» sus habilidades 【宣言】) y las
+  **herramientas manuales** (mover a la mano, al descarte, a FILE, dormir, aturdir, AP ±1000…).
+- **Habilidades**: cuando un efecto pide elegir, las cartas válidas se marcan en azul en la mesa
+  (las elegidas, en verde) y se confirma en el panel de la derecha; si están fuera de la mesa
+  (mazo, zona de retiradas…), se eligen en una ventana. Los efectos opcionales preguntan sí/no,
+  los de «elige uno» muestran las opciones y lo que aún no está automatizado se enseña con el
+  texto de la carta y un botón «Hecho» para aplicarlo con las herramientas manuales.
+  En «Ver en grande» se indica qué habilidades de la carta son automáticas.
 - **Ocultar la mano del rival** (menú Partida): al cambiar de jugador aparece una pantalla
   de «Pasa el equipo» para no ver la mano del otro.
 - **Carpeta de imágenes** (menú Partida): busca cada imagen por el ID de la carta. Puede ser
@@ -151,11 +159,15 @@ instalador en `salida\` (necesita Inno Setup 6). Para probar el código sin comp
 | Asistir, paso a Resolución con 7 en FILE, Resolver el caso | Sí |
 | Deducir y Pista falsa | Sí |
 | Acción, Guardia, Contacto, Irrupción, Disfraz | Sí |
-| Robo de Prueba al Caso (aviso de Inspiración) | Sí (el efecto de Inspiración, manual) |
+| Robo de Prueba al Caso e Inspiración (opcional para su dueño) | Sí |
 | Reciclar el mazo y derrota sin descarte | Sí |
 | Rapidez, Asalto, Bala | Sí |
 | Reglas de MR | Básicas |
-| Efectos impresos de cada carta | Manual (fase 3) |
+| 【宣言】: condiciones, límite por turno, coste (dormir, mano, Pruebas boca arriba…) | Sí |
+| 【登場時】, 【疾風】, 【現場リムーブ時】, 【変装時】, Caso en Resolución, «cuando…» | Sí |
+| Condiciones de icono (Compañero, Caso, 絆, FILE, fase, turno) y palabras clave condicionadas | Sí |
+| Efectos de las cartas (unas 1.430 de 2.250 líneas de habilidad, el 64 %) | Automáticos |
+| El resto de efectos | Se muestran para aplicarlos a mano |
 
 ## Estructura
 
@@ -166,7 +178,8 @@ core/           motor de reglas, sin interfaz
   estado.py     zonas, cartas en juego y decisiones pendientes
   acciones.py   acciones que envía cada jugador
   reglas.py     el reglamento
-  efectos/      futuro lenguaje de efectos
+  habilidades.py  intérprete: texto japonés de la carta → habilidades (tipo, condiciones, coste, pasos)
+  efectos.py    ejecución: una función por cada paso de efecto, cola de disparos, elecciones
   perfiles.py   perfiles de usuario y registro de accesos
   tutorial.py   motor del tutorial pregrabado
 datos/          cartas (de momento, inventadas para pruebas), mazos y guion del tutorial

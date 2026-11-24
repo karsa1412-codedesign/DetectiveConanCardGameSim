@@ -606,6 +606,22 @@
    ]
   },
   {
+   "espera": {
+    "jugador": 0,
+    "tipo": "Elegir",
+    "cartas": [
+     "D10011"
+    ]
+   },
+   "solo_si": "efecto",
+   "texto": {
+    "es": "Tu Caso tiene una habilidad que se acaba de disparar: «al pasar a Resolución, retiras 1 carta de la mano». Cuando un efecto pide elegir, las cartas válidas se marcan con borde azul. Pulsa sobre uno de tus {D10011} (tienes dos) y luego «Confirmar»."
+   },
+   "resaltar": [
+    "mano:0"
+   ]
+  },
+  {
    "texto": {
     "es": "¡Tu Caso está en Resolución, y ya no vuelve atrás! El Compañero vuelve en tu próximo turno, y entonces podrás resolver si tienes 7 Pruebas."
    },
@@ -768,7 +784,7 @@
   },
   {
    "texto": {
-    "es": "¡Caso resuelto! Has ganado con cartas reales. Ya conoces lo básico: FILE y niveles, color, Deducir, Acción, Guardia, Contacto, Irrupción, Asalto, Siguiente pista, Asistir y Resolver. Ahora prueba una partida local y ve aplicando también los efectos impresos de las cartas. ¡Suerte, detective!"
+    "es": "¡Caso resuelto! Has ganado con cartas reales. Ya conoces lo básico: FILE y niveles, color, Deducir, Acción, Guardia, Contacto, Irrupción, Asalto, Siguiente pista, Asistir y Resolver. Ahora prueba una partida local: las habilidades de las cartas se aplican solas (pulsa sobre una carta para «Declarar» las suyas) y, si alguna aún no está automatizada, la app te la mostrará para que la apliques a mano. ¡Suerte, detective!"
    },
    "resaltar": []
   }

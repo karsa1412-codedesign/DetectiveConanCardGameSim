@@ -50,6 +50,12 @@ def coincide(motor: Motor, a: A.Accion, spec: dict) -> bool:
         return _id(motor, a.uid) == spec.get("carta")
     if isinstance(a, A.PistaFalsa):
         return sorted(_id(motor, u) for u in a.uids) == sorted(spec.get("cartas", []))
+    if isinstance(a, A.Elegir):
+        if sorted(_id(motor, u) for u in a.uids) != sorted(spec.get("cartas", [])):
+            return False
+        return a.uids != () or a.opcion == spec.get("opcion", 0)
+    if isinstance(a, A.Declarar):
+        return _id(motor, a.uid) == spec["carta"] and a.indice == spec.get("indice", a.indice)
     if isinstance(a, (A.JugarCarta, A.Deducir)):
         if _id(motor, a.uid) != spec["carta"]:
             return False
@@ -90,6 +96,16 @@ class Guion:
         self.motor = nueva_partida(cat, mazos[0], mazos[1], semilla=self.datos.get("semilla", 1),
                                    primero=self.datos["primero"], arriba=arriba)
         self.narrador = self.datos.get("narrador", "")
+        self._saltar()
+
+    def _saltar(self):
+        """Salta los pasos «solo_si: efecto» cuando no hay ningún efecto esperando decisión
+        (p. ej. con cartas sin texto, el Caso no tiene habilidad que elegir)."""
+        while self.paso is not None and self.paso.get("solo_si") == "efecto":
+            pend = self.motor.p.pendiente
+            if pend is not None and pend.tipo == "efecto":
+                break
+            self.indice += 1
 
     # -------------------------------------------------------------- estado
 
@@ -144,6 +160,7 @@ class Guion:
             raise GuionError("Esa no es la jugada que toca ahora en el tutorial.")
         self.motor.aplicar(a)
         self.indice += 1
+        self._saltar()
 
     def continuar(self):
         """Avanza un paso de explicación o aplica la jugada del rival."""
@@ -158,3 +175,4 @@ class Guion:
             self.motor.aplicar(opciones[0])
         if t != "fin":
             self.indice += 1
+            self._saltar()

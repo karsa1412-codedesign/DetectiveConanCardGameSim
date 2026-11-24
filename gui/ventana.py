@@ -28,7 +28,7 @@ from .intro import Intro
 from .actualizaciones import Actualizaciones
 from .mazos import PaginaMazos
 from .pantallas import PaginaMenu, PaginaPerfiles
-from .textos import Textos, describir
+from .textos import Textos, describir, describir_efecto, linea_hab
 
 RESALTE = "border:3px solid #ff7a00;"
 
@@ -250,6 +250,21 @@ class DialogoCarta(QDialog):
             lab.setText(defn.texto_en(ventana.tx.idioma) or defn.nombre_en(ventana.tx.idioma))
             lab.setWordWrap(True)
         l.addWidget(lab)
+        # qué habilidades aplica la app sola y cuáles hay que aplicar a mano
+        from core import habilidades as H
+        filas = []
+        for h in H.habilidades(defn):
+            if h.clase in (H.NUCLEO, H.DISFRAZ):
+                continue
+            estado = ventana.tx("hab_auto") if h.automatica else ventana.tx("hab_manual")
+            color = "#2ecc71" if h.automatica else "#e0a020"
+            filas.append(f"<span style='color:{color}'>●</span> {linea_hab(defn, h.indice, ventana.tx.idioma)}"
+                         f" <i style='color:#999'>({estado})</i>")
+        if filas:
+            info = QLabel("<br>".join(filas))
+            info.setWordWrap(True)
+            info.setMaximumWidth(560)
+            l.addWidget(info)
 
 
 class DialogoFundas(QDialog):
@@ -370,6 +385,58 @@ class DialogoMazos(QDialog):
         return out
 
 
+class DialogoElegir(QDialog):
+    """Elegir cartas que no están a la vista en la mesa (mazo, zona de retiradas, Pruebas...)."""
+
+    def __init__(self, ventana, cartas, validas: set, minimo: int, maximo: int, elegidas: list, texto: str):
+        super().__init__(ventana)
+        self.v = ventana
+        self.setWindowTitle(ventana.tx("elegir_titulo"))
+        self.minimo, self.maximo = minimo, maximo
+        lay = QVBoxLayout(self)
+        lbl = QLabel(texto)
+        lbl.setWordWrap(True)
+        lay.addWidget(lbl)
+        rejilla = QWidget()
+        fila = QHBoxLayout(rejilla)
+        self.botones = {}
+        for c in cartas:
+            b = QToolButton()
+            b.setCheckable(True)
+            b.setEnabled(c.uid in validas)
+            b.setChecked(c.uid in elegidas)
+            pix = ventana.mesa._frente(c.defn)
+            b.setIcon(pix)
+            b.setIconSize(QSize(150, 210))
+            b.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            b.setText(c.defn.nombre_en(ventana.tx.idioma))
+            b.setStyleSheet("QToolButton:checked{border:4px solid #2ecc71;border-radius:8px;}"
+                            "QToolButton:disabled{color:#666;}")
+            b.toggled.connect(self._cambio)
+            fila.addWidget(b)
+            self.botones[c.uid] = b
+        sc = QScrollArea()
+        sc.setWidget(rejilla)
+        sc.setWidgetResizable(True)
+        sc.setMinimumSize(720, 300)
+        lay.addWidget(sc)
+        self.lbl = QLabel()
+        lay.addWidget(self.lbl)
+        self.caja = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.caja.accepted.connect(self.accept)
+        self.caja.rejected.connect(self.reject)
+        lay.addWidget(self.caja)
+        self._cambio()
+
+    def elegidas(self) -> list:
+        return [u for u, b in self.botones.items() if b.isChecked()]
+
+    def _cambio(self, *_):
+        n = len(self.elegidas())
+        self.lbl.setText(self.v.tx("ef_elegidas", n=f"{n} / {self.maximo}"))
+        self.caja.button(QDialogButtonBox.Ok).setEnabled(self.minimo <= n <= self.maximo)
+
+
 class PilaConFondo(QStackedWidget):
     """Contenedor de las pantallas con la pared de ladrillo azulada de fondo."""
 
@@ -412,6 +479,9 @@ class Ventana(QMainWindow):
         self.catalogo = None
         self.recargar_catalogo()
         self.motor: Motor | None = None
+        self.eleccion: list = []          # cartas marcadas para el efecto en curso
+        self.eleccion_de = None
+        self.eleccion_abierta = False
         self.guion: Guion | None = None
         self.modo = None            # "local" | "tutorial"
         self.fin_registrado = False
@@ -843,6 +913,7 @@ class Ventana(QMainWindow):
         self.lbl_registro.setText(tx("registro"))
         self._dibujar_acciones()
         self._dibujar_tutorial()
+        self._dibujar_eleccion()
         self.registro.setPlainText("\n".join(p.log))
         self.registro.verticalScrollBar().setValue(self.registro.verticalScrollBar().maximum())
 
@@ -859,6 +930,10 @@ class Ventana(QMainWindow):
         legales = m.legales()
         if tut and m.p.quien_decide() != 0:
             legales = []   # en el tutorial, las decisiones del rival las aplica el guion
+        pend = m.p.pendiente
+        if pend is not None and pend.tipo == "efecto" and m.p.ganador is None:
+            self._panel_efecto(pend, esperadas)
+            legales = []
         for a in legales:
             b = QPushButton(describir(tx, m, a))
             b.setMinimumHeight(30)
@@ -892,6 +967,168 @@ class Ventana(QMainWindow):
             herr.setMenu(menu)
             self.zona_botones.addWidget(herr)
         self.zona_botones.addStretch()
+
+    # ---------------------------------------------------------------- efectos de habilidades
+
+    def _panel_efecto(self, pend, esperadas):
+        """Lo que pide el efecto en curso: elegir cartas (foco en la mesa), sí/no, opción o «Hecho»."""
+        m, tx = self.motor, self.tx
+        d = pend.datos
+        tut = self.modo == "tutorial"
+        caja = QFrame()
+        caja.setObjectName("efecto")
+        caja.setStyleSheet("QFrame#efecto{border:2px solid #4fd1ff;border-radius:10px;padding:4px;}")
+        lay = QVBoxLayout(caja)
+        fuente = m.p.carta(d["fuente"])
+        titulo = QLabel(tx("ef_titulo", carta=fuente.defn.nombre_en(tx.idioma)))
+        titulo.setStyleSheet("font-weight:bold;font-size:14px;color:#4fd1ff;")
+        lay.addWidget(titulo)
+        texto = linea_hab(fuente.defn, d["indice"], tx.idioma) if d.get("indice") is not None \
+            else fuente.defn.texto_en(tx.idioma)
+        lbl = QLabel(texto)
+        lbl.setWordWrap(True)
+        lbl.setStyleSheet("font-style:italic;")
+        lay.addWidget(lbl)
+        if tut and pend.jugador != 0:
+            lay.addWidget(QLabel(tx("ef_rival_decide", n=pend.jugador + 1)))
+            self.zona_botones.addWidget(caja)
+            return
+        instr = QLabel(describir_efecto(tx, d))
+        instr.setWordWrap(True)
+        instr.setStyleSheet("font-size:13px;")
+        lay.addWidget(instr)
+        if d["modo"] == "manual":
+            extra = QLabel(d.get("texto", ""))
+            extra.setWordWrap(True)
+            extra.setStyleSheet("color:#aaa;font-size:11px;")
+            lay.addWidget(extra)
+
+        def boton(texto, accion, principal=False):
+            b = QPushButton(texto)
+            b.setMinimumHeight(30)
+            if principal:
+                b.setObjectName("primario")
+            if tut and accion not in (esperadas or []):
+                b.setEnabled(False)
+            elif tut:
+                b.setStyleSheet("font-weight:bold;" + RESALTE)
+            b.clicked.connect(lambda _=False, acc=accion: self.ejecutar(acc))
+            lay.addWidget(b)
+            return b
+
+        q = pend.jugador
+        if d["modo"] == "manual":
+            boton(tx("ef_hecho"), A.Elegir(q, (), 1), True)
+        elif d["modo"] == "si_no":
+            boton(tx("ef_si"), A.Elegir(q, (), 1), True)
+            boton(tx("ef_no"), A.Elegir(q, (), 0))
+        elif d["modo"] == "opcion":
+            for i, o in enumerate(d["opciones"]):
+                txt = o if not any("\u3040" <= ch <= "\u30ff" or "\u4e00" <= ch <= "\u9fff" for ch in o) \
+                    else f"{i + 1}. {o}"
+                boton(txt, A.Elegir(q, (), i), i == 0).setStyleSheet("text-align:left;padding:5px;")
+        else:
+            self._preparar_eleccion(pend)
+            fuera = [u for u in d["opciones"] if not self._en_mesa(u)]
+            lay.addWidget(QLabel(tx("ef_pulsa_ver") if len(fuera) == len(d["opciones"]) else tx("ef_pulsa")))
+            self.lbl_elegidas = QLabel()
+            lay.addWidget(self.lbl_elegidas)
+            if fuera:
+                ver = QPushButton(tx("ef_ver_cartas"))
+                ver.clicked.connect(self._dialogo_eleccion)
+                lay.addWidget(ver)
+            self.btn_confirmar = QPushButton(tx("ef_confirmar"))
+            self.btn_confirmar.setObjectName("primario")
+            self.btn_confirmar.setMinimumHeight(32)
+            self.btn_confirmar.clicked.connect(self._confirmar_eleccion)
+            lay.addWidget(self.btn_confirmar)
+            self._actualizar_eleccion()
+            if fuera and not self.eleccion_abierta:
+                self.eleccion_abierta = True
+                QTimer.singleShot(150, self._dialogo_eleccion)
+        self.zona_botones.addWidget(caja)
+
+    def _en_mesa(self, uid: int) -> bool:
+        it = self.mesa.items_carta.get(uid)
+        if it is None or not it.boca_arriba:
+            return False
+        c = self.motor.p.carta(uid)
+        j = self.motor.j(c.dueno)
+        return c in j.escena or c in j.mano or c is j.caso or c in j.zona_companero
+
+    def _preparar_eleccion(self, pend):
+        if getattr(self, "eleccion_de", None) is not pend:
+            self.eleccion_de = pend
+            self.eleccion = []
+            self.eleccion_abierta = False
+
+    def _actualizar_eleccion(self):
+        pend = getattr(self, "eleccion_de", None)
+        if pend is None or self.motor.p.pendiente is not pend:
+            return
+        d = pend.datos
+        n = len(self.eleccion)
+        self.lbl_elegidas.setText(self.tx("ef_elegidas", n=f"{n} / {d['max']}"))
+        ok = d["min"] <= n <= d["max"]
+        if self.modo == "tutorial":
+            ok = ok and self._eleccion_tutorial() is not None
+        self.btn_confirmar.setEnabled(ok)
+        self.btn_confirmar.setStyleSheet(RESALTE if ok and self.modo == "tutorial" else "")
+
+    def _dibujar_eleccion(self):
+        """Foco en la mesa: cartas elegibles (borde azul) y elegidas (verde)."""
+        m = self.motor
+        pend = m.p.pendiente if m else None
+        if pend is None or pend.tipo != "efecto" or pend.datos["modo"] != "elegir" or \
+                (self.modo == "tutorial" and pend.jugador != 0) or m.p.ganador is not None:
+            self.mesa.marcar_eleccion(set(), set())
+            return
+        self.mesa.marcar_eleccion({u for u in pend.datos["opciones"] if self._en_mesa(u)}, set(self.eleccion))
+
+    def alternar_eleccion(self, uid: int):
+        pend = getattr(self, "eleccion_de", None)
+        if pend is None or self.motor.p.pendiente is not pend:
+            return
+        if uid in self.eleccion:
+            self.eleccion.remove(uid)
+        else:
+            if len(self.eleccion) >= pend.datos["max"]:
+                if pend.datos["max"] == 1:
+                    self.eleccion = []
+                else:
+                    return
+            self.eleccion.append(uid)
+        self._actualizar_eleccion()
+        self._dibujar_eleccion()
+
+    def _eleccion_tutorial(self):
+        """La jugada del guion que coincide con las cartas marcadas (sin importar el orden)."""
+        return next((x for x in self.guion.esperadas()
+                     if isinstance(x, A.Elegir) and set(x.uids) == set(self.eleccion)), None)
+
+    def _confirmar_eleccion(self):
+        pend = getattr(self, "eleccion_de", None)
+        if pend is None:
+            return
+        accion = A.Elegir(pend.jugador, tuple(self.eleccion))
+        if self.modo == "tutorial":
+            accion = self._eleccion_tutorial() or accion
+        self.ejecutar(accion)
+
+    def _dialogo_eleccion(self):
+        pend = getattr(self, "eleccion_de", None)
+        if pend is None or self.motor.p.pendiente is not pend:
+            return
+        d = pend.datos
+        cartas = [self.motor.p.carta(u) for u in d.get("vistas") or d["opciones"]]
+        dlg = DialogoElegir(self, cartas, set(d["opciones"]), d["min"], d["max"], list(self.eleccion),
+                            describir_efecto(self.tx, d))
+        if dlg.exec() == QDialog.Accepted:
+            self.eleccion = dlg.elegidas()
+            self._actualizar_eleccion()
+            self._dibujar_eleccion()
+            if d["min"] <= len(self.eleccion) <= d["max"] and self.modo != "tutorial":
+                self._confirmar_eleccion()
 
     def rendirse(self):
         """Pregunta qué jugador se rinde (en partida local los dos juegan en el mismo equipo)."""

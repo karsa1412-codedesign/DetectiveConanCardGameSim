@@ -73,6 +73,20 @@ class Contactar(Accion):
 
 
 @dataclass(frozen=True)
+class Declarar(Accion):
+    """Usar una habilidad 【宣言】 (p. 14)."""
+    uid: int = 0              # carta que tiene la habilidad
+    indice: int = 0           # línea de la habilidad en el texto de la carta
+
+
+@dataclass(frozen=True)
+class Elegir(Accion):
+    """Respuesta a lo que pide un efecto: cartas elegidas, sí (1) / no (0), opción o «hecho»."""
+    uids: tuple = ()
+    opcion: int = 0
+
+
+@dataclass(frozen=True)
 class FinTurno(Accion):
     pass
 
@@ -90,7 +104,8 @@ class Manual(Accion):
 
 
 TODAS = {c.__name__: c for c in (Mulligan, JugarCarta, SiguientePista, NoJugar, Asistir, ResolverCaso,
-                                  Deducir, PistaFalsa, Atacar, Guardia, Contactar, FinTurno, Rendirse, Manual)}
+                                  Deducir, PistaFalsa, Atacar, Guardia, Contactar, Declarar, Elegir, FinTurno,
+                                  Rendirse, Manual)}
 
 
 def desde_dict(d: dict) -> Accion:

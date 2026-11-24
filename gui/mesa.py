@@ -29,6 +29,8 @@ ANCHO_MESA, ALTO_MESA = 1500, 960
 DURACION = 320                        # ms de cada animación
 ORO = QColor("#d9a845")
 NARANJA = QColor("#ff8a1e")
+ELEGIBLE = QColor("#4fd1ff")
+ELEGIDA = QColor("#2ecc71")
 COLORES = {"azul": "#2f5fa8", "rojo": "#b23b3b", "verde": "#2f8a4e", "amarillo": "#c49a1a",
            "blanco": "#8c8c8c", "negro": "#3a3a3a"}
 
@@ -100,6 +102,8 @@ class CartaItem(QGraphicsObject):
         self.apaisada = False
         self.resaltado = False
         self.objetivo = False         # resaltado de destino válido durante un arrastre
+        self.elegible = False         # se puede elegir para el efecto en curso (foco)
+        self.elegida = False
         self.arrastrable = False
         self.en_mano = False
         self._inicio = None
@@ -141,6 +145,18 @@ class CartaItem(QGraphicsObject):
             p.setPen(QPen(NARANJA if self.resaltado else ORO, 4))
             p.setBrush(Qt.NoBrush)
             p.drawRoundedRect(r.adjusted(-2, -2, 2, 2), 8, 8)
+        if self.elegible or self.elegida:
+            color = ELEGIDA if self.elegida else ELEGIBLE
+            p.setPen(QPen(color, 5 if self.elegida else 3, Qt.SolidLine if self.elegida else Qt.DashLine))
+            p.setBrush(Qt.NoBrush)
+            p.drawRoundedRect(r.adjusted(-3, -3, 3, 3), 9, 9)
+            if self.elegida:
+                p.setPen(Qt.NoPen)
+                p.setBrush(ELEGIDA)
+                p.drawEllipse(QPointF(r.right() - 12, r.top() + 12), 11, 11)
+                p.setPen(QPen(QColor("white"), 3))
+                p.drawLine(QPointF(r.right() - 17, r.top() + 12), QPointF(r.right() - 13, r.top() + 16))
+                p.drawLine(QPointF(r.right() - 13, r.top() + 16), QPointF(r.right() - 6, r.top() + 7))
 
     # --------------------------------------------------------- ratón
     def hoverEnterEvent(self, ev):
@@ -566,8 +582,19 @@ class Mesa(QGraphicsView):
     def ocultar_previa(self):
         self.v.vista_previa.hide()
 
+    def marcar_eleccion(self, elegibles: set, elegidas: set):
+        """Foco del efecto en curso: cartas que se pueden elegir y las ya elegidas."""
+        self.elegibles = set(elegibles)
+        for uid, it in self.items_carta.items():
+            it.elegible = uid in elegibles and uid not in elegidas
+            it.elegida = uid in elegidas
+            it.update()
+
     def clic(self, it: CartaItem, pos_pantalla):
         self.ocultar_previa()
+        if it.uid in getattr(self, "elegibles", set()) and it.boca_arriba:
+            self.v.alternar_eleccion(it.uid)
+            return
         c = self.motor.p.carta(it.uid)
         jug = self.motor.j(c.dueno)
         if not it.boca_arriba and c in jug.mano:

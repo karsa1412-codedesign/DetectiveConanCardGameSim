@@ -12,6 +12,8 @@ import random
 from itertools import combinations
 
 from . import acciones as A
+from . import habilidades as H
+from .efectos import EfectosMixin
 from .cartas import (ASALTO, ASALTO_CASO, ASALTO_PERSONAJE, BALA, CASO, COMPANERO, EVENTO,
                      PERSONAJE, PISTA_FALSA, RAPIDEZ, Catalogo, Mazo)
 from .estado import (ACTIVO, ATURDIDO, DORMIDO, HASTA_CONTACTO, HASTA_TURNO, Carta, Contacto,
@@ -73,7 +75,8 @@ def nueva_partida(cat: Catalogo, mazo0: Mazo, mazo1: Mazo, semilla: int | None =
     return m
 
 
-class Motor:
+class Motor(EfectosMixin):
+    Error = ReglaError
     OPS_MANUALES = ("robar", "a_mano", "a_descarte", "al_fondo_mazo", "a_file", "activar",
                     "dormir", "aturdir", "ap+1000", "ap-1000", "prueba+1", "prueba-1",
                     "barajar")
@@ -180,12 +183,12 @@ class Motor:
         else:
             j.descarte.append(c)
             self._log(f"{self.nombre(c)} se retira de escena.")
+        self._disparar(H.SALIDA, c)     # 【現場リムーブ時】
 
     def _entrar(self, j: Jugador, c: Carta, retirar: int | None):
         if c.defn.tipo == EVENTO:
-            j.descarte.append(c)
-            self._log(f"Jugador {j.idx + 1} juega el Evento {self.nombre(c)}. "
-                      "Aplica su efecto (aún manual).")
+            self._log(f"Jugador {j.idx + 1} juega el Evento {self.nombre(c)}.")
+            self._usar_evento(j, c)
             return
         if len(j.escena) >= MAX_ESCENA:
             sale = self.p.carta(retirar) if retirar is not None else None
@@ -195,6 +198,11 @@ class Motor:
             self._retirar_de_escena(sale)
         elif retirar is not None:
             raise ReglaError("El Cambio solo se permite con la escena llena (p. 12).")
+        c.limpiar()
+        self._poner_en_escena(j, c)
+
+    def _poner_en_escena(self, j: Jugador, c: Carta):
+        """Entrada en escena por cualquier vía; dispara 【登場時】 y 【疾風】."""
         if c.defn.mr:
             # p. 26: al entrar una MR, la MR anterior se retira
             for vieja in [x for x in j.escena + j.zona_companero if x.defn.mr]:
@@ -205,11 +213,16 @@ class Motor:
                     self._log(f"{self.nombre(vieja)} (MR) se retira.")
                 else:
                     self._retirar_de_escena(vieja)
-        c.limpiar()
         c.turno_entrada = self.p.turno
         j.escena.append(c)
+        if self.entra_dormido(c):
+            c.estado = DORMIDO
         self._log(f"Jugador {j.idx + 1} pone en escena a {self.nombre(c)} "
                   f"(nivel {c.defn.nivel}, AP {c.ap}, LP {c.lp}).")
+        j.entradas_turno += 1
+        self._disparar(H.ENTRADA, c)
+        if j.entradas_turno == 1:
+            self._disparar(H.RAFAGA, c)   # 【疾風】: el primero en entrar este turno
 
     def _puede_jugar(self, j: Jugador, c: Carta, limite: int) -> str | None:
         if c not in j.mano:
@@ -229,7 +242,10 @@ class Motor:
         p.turno += 1
         p.activo = idx
         j = self.j(idx)
-        j.jugo_mano = j.uso_pista = False
+        j.jugo_mano = j.uso_pista = j.sin_pista = False
+        for x in p.jugadores:
+            x.entradas_turno = 0
+        p.usos.clear()
         p.fase = "automatica"
         self._log(f"— Turno {p.turno}: jugador {idx + 1} —")
         # p. 10, fase automática
@@ -254,9 +270,17 @@ class Motor:
         j = self.j(self.p.activo)
         self.p.fase = "final"
         self._log(f"Fin del turno del jugador {j.idx + 1}.")
+        for c in list(j.escena):
+            self._disparar(H.DISPARO, c, H.EV_FIN_TURNO)
+        if self.efectos_en_curso():
+            self.p.diferida = ("fin_turno", None)
+        else:
+            self._cerrar_turno()
+
+    def _cerrar_turno(self):
         for jug in self.p.jugadores:
             for c in jug.escena + [jug.companero]:
-                c.mods = [m for m in c.mods if m.hasta != HASTA_TURNO]
+                c.mods = [m for m in c.mods if m.hasta not in (HASTA_TURNO, f"fin_turno_de:{self.p.activo}")]
         self._empezar_turno(self.p.rival(self.p.activo))
 
     # ------------------------------------------------------------ API pública
@@ -266,7 +290,9 @@ class Motor:
         if p.ganador is not None:
             raise ReglaError("La partida ha terminado.")
         if isinstance(a, A.Manual):
-            return self._manual(a)
+            self._manual(a)
+            self._recalcular()
+            return
         if isinstance(a, A.Rendirse):   # no hace falta que sea su turno
             self._log(f"El jugador {a.jugador + 1} se rinde.")
             self.p.contacto = None
@@ -274,6 +300,11 @@ class Motor:
             return
         if a.jugador != p.quien_decide():
             raise ReglaError(f"Ahora decide el jugador {p.quien_decide() + 1}.")
+        self._aplicar(a)
+        self._procesar()
+
+    def _aplicar(self, a: A.Accion):
+        p = self.p
         pend = p.pendiente
         if pend:
             manejador = {
@@ -282,16 +313,20 @@ class Motor:
                 "pista_falsa": (A.PistaFalsa, self._a_pista_falsa),
                 "guardia": (A.Guardia, self._a_guardia),
                 "contacto": (A.Contactar, self._a_contactar),
+                "efecto": (A.Elegir, self._a_elegir_motor),
             }[pend.tipo]
             if not isinstance(a, manejador[0]):
                 raise ReglaError(f"Se espera una respuesta de tipo «{pend.tipo}».")
             return manejador[1](a)
         if p.fase != "principal":
             raise ReglaError("Solo se actúa en la fase principal.")
+        if self.efectos_en_curso():
+            raise ReglaError("Primero hay que terminar de resolver los efectos.")
         fn = {
             A.JugarCarta: self._a_jugar, A.SiguientePista: self._a_siguiente_pista,
             A.Asistir: self._a_asistir, A.ResolverCaso: self._a_resolver,
             A.Deducir: self._a_deducir, A.Atacar: self._a_atacar, A.FinTurno: self._a_fin_turno,
+            A.Declarar: self._a_declarar,
         }.get(type(a))
         if fn is None:
             raise ReglaError("Acción no disponible en este momento.")
@@ -307,6 +342,8 @@ class Motor:
         pend = p.pendiente
         out: list[A.Accion] = []
         if pend:
+            if pend.tipo == "efecto":
+                return self.legales_efecto()
             if pend.tipo == "mulligan":
                 out.append(A.Mulligan(q, ()))
                 out.append(A.Mulligan(q, tuple(c.uid for c in j.mano)))
@@ -320,21 +357,23 @@ class Motor:
                     out += [A.PistaFalsa(q, tuple(x)) for x in combinations(cand, n)]
             elif pend.tipo == "guardia":
                 out.append(A.Guardia(q, None))
-                out += [A.Guardia(q, c.uid) for c in j.escena if c.estado == ACTIVO]
+                out += [A.Guardia(q, c.uid) for c in self._guardias(j)]
             elif pend.tipo == "contacto":
                 out.append(A.Contactar(q, None))
+                mio = self._propio_contacto(j)
                 for c in j.mano:
-                    if c.defn.irrupcion_ap is not None:
+                    if self.irrupcion_valida(j, c, mio) is not None and not self._sin_irrupcion(j):
                         out.append(A.Contactar(q, c.uid, "irrupcion"))
                     if c.defn.disfraz and c.defn.tipo == PERSONAJE:
                         out.append(A.Contactar(q, c.uid, "disfraz"))
             return out
-        if p.fase != "principal":
+        if p.fase != "principal" or self.efectos_en_curso():
             return []
         if not j.jugo_mano and not j.uso_pista:
             out += self._jugadas(j, j.cartas_file)
-        if j.file:
+        if j.file and not j.sin_pista:
             out.append(A.SiguientePista(q))
+        out += [A.Declarar(q, c.uid, h.indice) for c, h in self.declarables(j)]
         comp = j.companero
         if not j.companero_en_file and comp.estado == ACTIVO:
             out.append(A.Asistir(q))
@@ -347,9 +386,12 @@ class Motor:
                 continue
             if self._puede_deducir(c):
                 out.append(A.Deducir(q, c.uid))
+            obligados = self._obligados(c)
             if self._puede_atacar(c, personaje=True):
-                out += [A.Atacar(q, c.uid, t.uid) for t in rival.escena if t.estado in (DORMIDO, ATURDIDO)]
-            if self._puede_atacar(c, personaje=False) and rival.pruebas:
+                out += [A.Atacar(q, c.uid, t.uid) for t in rival.escena if self._objetivo_valido(c, t)
+                        and (not obligados or t in obligados)]
+            if self._puede_atacar(c, personaje=False) and rival.pruebas and not c.marca("sin_accion_caso") \
+                    and not obligados:
                 out.append(A.Atacar(q, c.uid, None))
         out.append(A.FinTurno(q))
         return out
@@ -370,15 +412,41 @@ class Motor:
         return out
 
     def _puede_deducir(self, c: Carta) -> bool:
-        return c.estado == ACTIVO and (not self._recien_llegado(c) or c.defn.tiene(RAPIDEZ))
+        return c.estado == ACTIVO and (not self._recien_llegado(c) or self.tiene(c, RAPIDEZ))
+
+    def _objetivo_valido(self, atacante: Carta, t: Carta) -> bool:
+        """p. 16: se elige un Personaje rival dormido o aturdido (o el que permita una habilidad)."""
+        if t.estado in (DORMIDO, ATURDIDO):
+            return True
+        return any(self._encaja(t, f, atacante, atacante.dueno, {}) for f in self.objetivos_extra(atacante))
+
+    def _obligados(self, atacante: Carta) -> list:
+        """Personajes rivales que hay que elegir si se pueden elegir («必ず指定する»)."""
+        rival = self.j(self.p.rival(atacante.dueno))
+        return [t for t in rival.escena if t.marca("provocar") and self._objetivo_valido(atacante, t)
+                and self._puede_atacar(atacante, personaje=True)]
+
+    def _guardias(self, j: Jugador) -> list:
+        return [c for c in j.escena if c.estado == ACTIVO or (c.estado == DORMIDO and c.marca("guardia_dormido"))]
+
+    def _propio_contacto(self, j: Jugador) -> Carta | None:
+        ct = self.p.contacto
+        if ct is None:
+            return None
+        a = self.p.carta(ct.atacante)
+        return a if a.dueno == j.idx else self.p.carta(ct.defensor)
+
+    def _sin_irrupcion(self, j: Jugador) -> bool:
+        rival = self.j(self.p.rival(j.idx))
+        return any(c.marca("sin_irrupcion_rival") for c in rival.escena)
 
     def _puede_atacar(self, c: Carta, personaje: bool) -> bool:
         if c.estado != ACTIVO:
             return False
         if not self._recien_llegado(c):
             return True
-        d = c.defn
-        return d.tiene(RAPIDEZ) or d.tiene(ASALTO) or d.tiene(ASALTO_PERSONAJE if personaje else ASALTO_CASO)
+        return (self.tiene(c, RAPIDEZ) or self.tiene(c, ASALTO) or
+                self.tiene(c, ASALTO_PERSONAJE if personaje else ASALTO_CASO))
 
     # ------------------------------------------------------------ preparación
 
@@ -427,6 +495,8 @@ class Motor:
 
     def _a_siguiente_pista(self, a: A.SiguientePista):
         j = self.j(a.jugador)
+        if j.sin_pista:
+            raise ReglaError("Un efecto impide usar Siguiente pista este turno.")
         if not j.file:
             raise ReglaError("No hay cartas en FILE.")
         c = j.file.pop()
@@ -469,6 +539,7 @@ class Motor:
         if not j.caso_resuelto and j.cartas_file >= FILE_PARA_RESOLUCION:
             j.caso_resuelto = True
             self._log(f"¡El Caso del jugador {j.idx + 1} pasa a Resolución!")
+            self._disparar(H.CASO_RESOLUCION, j.caso)
 
     def _a_resolver(self, a: A.ResolverCaso):
         j = self.j(a.jugador)
@@ -493,10 +564,13 @@ class Motor:
             raise ReglaError("Solo deducen tu Compañero o tus Personajes en escena.")
         c.estado = DORMIDO
         self._log(f"Jugador {j.idx + 1} Deduce con {self.nombre(c)} (LP {c.lp}).")
+        if c is not j.companero:
+            self._disparar(H.DISPARO, c, H.EV_DEDUCE)
+            self._disparar(H.DISPARO, c, H.EV_DEDUCE_O_ACCION)
         rival = self.j(self.p.rival(j.idx))
-        cand = [x.uid for x in rival.escena if x.estado == ACTIVO and x.defn.tiene(PISTA_FALSA)]
+        cand = [x.uid for x in rival.escena if x.estado == ACTIVO and self.tiene(x, PISTA_FALSA)]
         if cand:
-            self.p.pendiente = Pendiente("pista_falsa", rival.idx, {"actor": c.uid, "candidatos": cand})
+            self._esperar(Pendiente("pista_falsa", rival.idx, {"actor": c.uid, "candidatos": cand}))
         else:
             self._resolver_deduccion(j, c, 0)
 
@@ -508,7 +582,7 @@ class Motor:
         for u in a.uids:
             x = self.p.carta(u)
             x.estado = DORMIDO
-            rebaja += x.defn.valor(PISTA_FALSA)
+            rebaja += self.valor_clave(x, PISTA_FALSA)
         actor = self.p.carta(pend.datos["actor"])
         self.p.pendiente = None
         if a.uids:
@@ -533,19 +607,27 @@ class Motor:
                 raise ReglaError("Este Personaje no puede hacer Acción ahora.")
             if not rival.pruebas:
                 raise ReglaError("No se puede atacar a un Caso sin Pruebas (p. 16).")
+            if c.marca("sin_accion_caso"):
+                raise ReglaError("Este Personaje no puede hacer Acción contra el Caso.")
             desc = "el Caso rival"
         else:
             t = self.p.carta(a.objetivo)
             if not self._puede_atacar(c, personaje=True):
                 raise ReglaError("Este Personaje no puede hacer Acción ahora.")
-            if t not in rival.escena or t.estado not in (DORMIDO, ATURDIDO):
+            if t not in rival.escena or not self._objetivo_valido(c, t):
                 raise ReglaError("El objetivo debe ser un Personaje rival dormido o aturdido.")
             desc = self.nombre(t)
+        obligados = self._obligados(c)
+        if obligados and (a.objetivo is None or self.p.carta(a.objetivo) not in obligados):
+            raise ReglaError(f"Debes elegir a {self.nombre(obligados[0])} como objetivo.")
         c.estado = DORMIDO
         self._log(f"Jugador {j.idx + 1}: {self.nombre(c)} (AP {c.ap}) hace Acción contra {desc}.")
-        guardias = [x for x in rival.escena if x.estado == ACTIVO]
-        if guardias and not c.defn.tiene(BALA):
-            self.p.pendiente = Pendiente("guardia", rival.idx, {"atacante": c.uid, "objetivo": a.objetivo})
+        self._disparar(H.DISPARO, c, H.EV_ACCION)
+        self._disparar(H.DISPARO, c, H.EV_DEDUCE_O_ACCION)
+        self._disparar(H.DISPARO, c, H.EV_ACCION_CASO if a.objetivo is None else H.EV_ACCION_PERSONAJE)
+        guardias = [x for x in self._guardias(rival) if x.uid != a.objetivo]
+        if guardias and not self.tiene(c, BALA):
+            self._esperar(Pendiente("guardia", rival.idx, {"atacante": c.uid, "objetivo": a.objetivo}))
         else:
             self._sin_guardia(c, a.objetivo)
 
@@ -559,11 +641,12 @@ class Motor:
             self._sin_guardia(atacante, pend.datos["objetivo"])
             return
         g = self.p.carta(a.uid)
-        if g not in rival.escena or g.estado != ACTIVO:
+        if g not in self._guardias(rival):
             raise ReglaError("Solo guarda un Personaje activo de tu escena.")
         g.estado = DORMIDO
         self.p.pendiente = None
         self._log(f"{self.nombre(g)} Guarda.")
+        self._disparar(H.DISPARO, g, H.EV_GUARDIA)
         self._iniciar_contacto(atacante, g)
 
     def _sin_guardia(self, atacante: Carta, objetivo: int | None):
@@ -577,7 +660,10 @@ class Motor:
             quitada = rival.pruebas.pop()
             rival.descarte.append(quitada)
             self._log(f"Jugador {rival.idx + 1} pierde 1 Prueba ({self.nombre(quitada)}).")
-            if quitada.defn.inspiracion:
+            if any(h.clase == H.INSPIRACION for h in H.habilidades(quitada.defn)):
+                self._log(f"¡Inspiración de {self.nombre(quitada)}! Su dueño decide si la aplica.")
+                self._disparar(H.INSPIRACION, quitada, opcional=True)
+            elif quitada.defn.inspiracion:
                 self._log(f"¡Inspiración de {self.nombre(quitada)}! Su dueño puede aplicar el efecto (manual).")
         self._ganar_pruebas(j, 1)
 
@@ -591,7 +677,11 @@ class Motor:
         self.p.contacto = Contacto(atacante.uid, defensor.uid, orden, 0, {a_j: False, d_j: False})
         self._log(f"Contacto: {self.nombre(atacante)} (AP {atacante.ap}) contra "
                   f"{self.nombre(defensor)} (AP {defensor.ap}).")
-        self.p.pendiente = Pendiente("contacto", orden[0])
+        for c, otro in ((atacante, defensor), (defensor, atacante)):
+            self._disparar(H.DISPARO, c, H.EV_CONTACTO)
+            if otro.ap > c.ap:
+                self._disparar(H.DISPARO, c, H.EV_CONTACTO_MAYOR)
+        self._esperar(Pendiente("contacto", orden[0]))
 
     def _a_contactar(self, a: A.Contactar):
         ct = self.p.contacto
@@ -603,13 +693,15 @@ class Motor:
             propio = ct.atacante if self.p.carta(ct.atacante).dueno == j.idx else ct.defensor
             mio = self.p.carta(propio)
             if a.modo == "irrupcion":
-                if c.defn.irrupcion_ap is None:
-                    raise ReglaError("Esta carta no tiene Irrupción.")
+                valor = self.irrupcion_valida(j, c, mio)
+                if valor is None or self._sin_irrupcion(j):
+                    raise ReglaError("Esta carta no tiene Irrupción o ahora no se puede usar.")
                 j.mano.remove(c)
                 j.descarte.append(c)
-                mio.mods.append(Mod("ap", c.defn.irrupcion_ap, HASTA_CONTACTO))
-                self._log(f"Irrupción de {self.nombre(c)}: {self.nombre(mio)} AP +{c.defn.irrupcion_ap} "
+                mio.mods.append(Mod("ap", valor, HASTA_CONTACTO))
+                self._log(f"Irrupción de {self.nombre(c)}: {self.nombre(mio)} AP +{valor} "
                           f"(ahora {mio.ap}).")
+                self._efecto_irrupcion(j, c, mio)
             elif a.modo == "disfraz":
                 if not (c.defn.disfraz and c.defn.tipo == PERSONAJE):
                     raise ReglaError("Esta carta no tiene Disfraz.")
@@ -627,18 +719,22 @@ class Motor:
                 else:
                     ct.defensor = c.uid
                 self._log(f"Disfraz: {self.nombre(c)} sustituye a {self.nombre(mio)} (AP {c.ap}).")
+                self._disparar(H.ENTRADA_DISFRAZ, c)
             else:
                 raise ReglaError("Modo de Contacto desconocido.")
             ct.actuo[j.idx] = True
         else:
             self._log(f"Jugador {j.idx + 1} pasa en el Contacto.")
         primero, segundo = ct.orden
+        self.p.pendiente = None
         if ct.paso == 0:
             ct.paso = 1
-            self.p.pendiente = Pendiente("contacto", segundo)
+            self._esperar(Pendiente("contacto", segundo))
         elif ct.paso == 1 and not ct.actuo[primero] and ct.actuo[segundo]:
             ct.paso = 2
-            self.p.pendiente = Pendiente("contacto", primero)
+            self._esperar(Pendiente("contacto", primero))
+        elif self.efectos_en_curso():
+            self.p.diferida = ("resolver_contacto", None)   # p. 17: los efectos van antes
         else:
             self._resolver_contacto()
 
@@ -650,6 +746,10 @@ class Motor:
         self._log(f"Comparación de AP: {atk.ap} contra {dfn.ap}.")
         if atk.ap >= dfn.ap:
             self._retirar_de_escena(dfn)
+            if atk in self.j(atk.dueno).escena:
+                self._disparar(H.DISPARO, atk, H.EV_GANA_CONTACTO)
+            for x in list(self.j(atk.dueno).escena):
+                self._disparar(H.DISPARO, x, H.EV_RIVAL_RETIRADO)
         else:
             self._log("No ocurre nada.")
         for c in (atk, dfn):
@@ -657,6 +757,9 @@ class Motor:
 
     def _a_fin_turno(self, a: A.FinTurno):
         self._terminar_turno()
+
+    def _a_elegir_motor(self, a: A.Elegir):
+        self._a_elegir(a)
 
     # ------------------------------------------------------------ herramientas manuales
 

@@ -68,7 +68,93 @@ def describir(tx: Textos, motor, a: A.Accion) -> str:
         c = motor.p.carta(a.uid)
         if a.modo == "disfraz":
             return tx("a_disfraz", carta=n(a.uid))
-        return tx("a_irrupcion", carta=n(a.uid), ap=c.defn.irrupcion_ap)
+        j = motor.j(a.jugador)
+        ap = motor.irrupcion_valida(j, c, motor._propio_contacto(j)) or c.defn.irrupcion_ap
+        return tx("a_irrupcion", carta=n(a.uid), ap=ap)
     if isinstance(a, A.FinTurno):
         return tx("a_fin_turno")
+    if isinstance(a, A.Declarar):
+        return describir_declarar(tx, motor, a)
+    if isinstance(a, A.Elegir):
+        d = motor.p.pendiente.datos if motor.p.pendiente else {}
+        if a.uids:
+            return ", ".join(f"«{n(u)}»" for u in a.uids)
+        if d.get("modo") == "opcion":
+            return d["opciones"][a.opcion]
+        if d.get("modo") == "manual":
+            return tx("ef_hecho")
+        if d.get("modo") == "si_no":
+            return tx("ef_si") if a.opcion else tx("ef_no")
+        return tx("ef_confirmar")
     return type(a).__name__
+
+
+# ------------------------------------------------------------------ habilidades
+
+def _lineas(texto: str) -> list[str]:
+    """Líneas de habilidad, uniendo las opciones «・» a su línea (como core.habilidades)."""
+    out: list[str] = []
+    for l in (texto or "").splitlines():
+        if not l.strip():
+            continue
+        if out and l.lstrip().startswith(("・", "•", "(上から", "（上から")):
+            out[-1] += " " + l.strip()
+        else:
+            out.append(l.strip())
+    return out
+
+
+def linea_hab(defn, indice: int, idioma: str) -> str:
+    """Texto traducido de la habilidad nº indice (o el japonés si la traducción no cuadra)."""
+    ja = _lineas(defn.texto.get("ja", ""))
+    trad = _lineas(defn.texto.get(idioma) or defn.texto.get("es") or "")
+    if len(trad) == len(ja) and 0 <= indice < len(trad):
+        return trad[indice]
+    return ja[indice] if 0 <= indice < len(ja) else ""
+
+
+def _corto(texto: str, n: int = 90) -> str:
+    texto = " ".join(texto.split())
+    return texto if len(texto) <= n else texto[:n - 1] + "…"
+
+
+def describir_declarar(tx: Textos, motor, a: A.Declarar) -> str:
+    c = motor.p.carta(a.uid)
+    return tx("a_declarar", carta=c.defn.nombre_en(tx.idioma), hab=_corto(linea_hab(c.defn, a.indice, tx.idioma)))
+
+
+def _rango(tx: Textos, minimo: int, maximo: int) -> str:
+    if minimo == maximo:
+        return tx("ef_rango_exacto", n=maximo)
+    return tx("ef_rango_hasta", n=maximo)
+
+
+def describir_efecto(tx: Textos, datos: dict) -> str:
+    """Instrucción para el jugador según lo que pide el efecto pendiente."""
+    modo = datos["modo"]
+    if modo == "manual":
+        return tx("ef_manual")
+    if modo == "si_no":
+        return tx("ef_inspiracion") if datos.get("inspiracion") else tx("ef_pregunta")
+    if modo == "opcion":
+        return tx("ef_opcion")
+    rango = _rango(tx, datos["min"], datos["max"])
+    tras = datos.get("tras")
+    if tras == "descartar":
+        return tx("ef_elegir_mano", rango=rango)
+    if tras == "cambio":
+        return tx("ef_elegir_cambio")
+    if tras == "tomar":
+        return tx("ef_elegir_vistas", rango=rango, resto=tx("ef_resto_fondo"))
+    det = datos.get("detalle", {})
+    acc = datos.get("accion", "")
+    if acc == "mod":
+        valor = det.get("valor", 0)
+        clave = "acc_mod_contacto" if det.get("hasta") == "contacto" else "acc_mod"
+        accion = tx(clave, campo={"ap": "AP", "lp": "LP", "nivel": "Nv."}.get(det.get("campo"), ""),
+                    valor=f"{valor:+d}")
+    elif acc == "dar_claves":
+        accion = tx("acc_dar_claves", claves=", ".join(tx("clave_" + k) for k in det.get("claves", {})))
+    else:
+        accion = tx("acc_" + acc) if ("acc_" + acc) in tx.t else tx("acc_otro")
+    return tx("ef_elegir", rango=rango, que=tx("ef_tipo_" + det.get("tipo", "carta")), accion=accion)
