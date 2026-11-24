@@ -45,6 +45,14 @@ recorren entero en cada compilación, así que si un cambio en el motor rompe el
   cuentan juntas); avisa de las cartas que no comparten color con el Caso. Guarda en `mazos/`
   e importa o exporta listas de texto («3 D10011», «Compañero: D10001», «Caso: D10026»).
 
+## Intro y fondo
+
+Al abrir la app se reproduce una intro de unos 7 segundos (pared de ladrillo, foco, título
+«Detective Conan · Juego de cartas coleccionables · Fan Sim» y una cerradura que se abre a la
+app). Se salta con un clic o una tecla y se desactiva en Partida → «Mostrar la intro al iniciar».
+Las pantallas usan de fondo una pared de ladrillo desgastada con velo azul (`recursos/fondo.jpg`).
+Todo es diseño propio, sin el logo ni material oficial.
+
 ## Mesa de juego
 
 El tablero es una mesa gráfica: las cartas se deslizan al moverse y giran al dormirse (90°) o

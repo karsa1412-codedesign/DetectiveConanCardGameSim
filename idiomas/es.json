@@ -275,5 +275,6 @@
  "imp_reinicia": "Cierra y vuelve a abrir la app para que se carguen.",
  "acerca": "Acerca de",
  "abrir_datos": "Abrir la carpeta de datos",
- "acerca_texto": "Simulador Detective Conan (proyecto de fans, no oficial)\nVersión {v}\n\nTus datos: {datos}\nActualizaciones: {repo}"
+ "acerca_texto": "Simulador Detective Conan (proyecto de fans, no oficial)\nVersión {v}\n\nTus datos: {datos}\nActualizaciones: {repo}",
+ "ver_intro": "Mostrar la intro al iniciar"
 }

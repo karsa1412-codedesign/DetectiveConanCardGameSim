@@ -11,6 +11,6 @@ coll = COLLECT(exe, a.binaries, a.datas, name="SimuladorConan")
 
 # datos de serie e idiomas, junto al .exe (sin los datos de usuario de quien compila)
 destino = Path(DISTPATH) / "SimuladorConan"
-for carpeta in ("datos", "idiomas"):
+for carpeta in ("datos", "idiomas", "recursos"):
     shutil.copytree(carpeta, destino / carpeta, dirs_exist_ok=True,
                     ignore=shutil.ignore_patterns("__pycache__", "*.py", "cartas.json", "traducciones", "*.tmp"))

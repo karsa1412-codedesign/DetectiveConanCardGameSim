@@ -275,5 +275,6 @@
  "imp_reinicia": "Tanca i torna a obrir l'app perquè es carreguin.",
  "acerca": "Quant a",
  "abrir_datos": "Obrir la carpeta de dades",
- "acerca_texto": "Simulador Detectiu Conan (projecte de fans, no oficial)\nVersió {v}\n\nLes teves dades: {datos}\nActualitzacions: {repo}"
+ "acerca_texto": "Simulador Detectiu Conan (projecte de fans, no oficial)\nVersió {v}\n\nLes teves dades: {datos}\nActualitzacions: {repo}",
+ "ver_intro": "Mostrar la intro en iniciar"
 }

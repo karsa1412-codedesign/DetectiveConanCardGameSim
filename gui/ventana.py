@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import configparser
+import os
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QTimer
 from PySide6.QtGui import QAction, QColor, QPixmap, QTransform
 from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
                                QFrame, QGroupBox, QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox,
@@ -23,6 +24,7 @@ from .contenido import PaginaContenido
 from .fundas import Fundas
 from .mesa import Mesa
 from .traducciones import PaginaTraducciones
+from .intro import Intro
 from .actualizaciones import Actualizaciones
 from .mazos import PaginaMazos
 from .pantallas import PaginaMenu, PaginaPerfiles
@@ -368,6 +370,27 @@ class DialogoMazos(QDialog):
         return out
 
 
+class PilaConFondo(QStackedWidget):
+    """Contenedor de las pantallas con la pared de ladrillo azulada de fondo."""
+
+    def __init__(self, imagen: Path):
+        super().__init__()
+        self.fondo = QPixmap(str(imagen)) if imagen.exists() else None
+        self._escalado = None
+
+    def paintEvent(self, ev):
+        from PySide6.QtGui import QPainter
+        p = QPainter(self)
+        if self.fondo is None or self.fondo.isNull():
+            p.fillRect(self.rect(), QColor("#151b27"))
+            return
+        if self._escalado is None or self._escalado.size() != self.size():
+            esc = self.fondo.scaled(self.size(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+            x, y = (esc.width() - self.width()) // 2, (esc.height() - self.height()) // 2
+            self._escalado = esc.copy(x, y, self.width(), self.height())
+        p.drawPixmap(0, 0, self._escalado)
+
+
 class Ventana(QMainWindow):
     def __init__(self, base: Path):
         super().__init__()
@@ -396,7 +419,7 @@ class Ventana(QMainWindow):
         self._zonas: dict[str, list] = {}
         self._cartas: list = []
         self.resize(1400, 880)
-        self.pila = QStackedWidget()
+        self.pila = PilaConFondo(self.base / "recursos" / "fondo.jpg")
         self.setCentralWidget(self.pila)
         self.pag_perfiles = PaginaPerfiles(self)
         self.pag_perfiles.elegido.connect(self.entrar_perfil)
@@ -416,8 +439,33 @@ class Ventana(QMainWindow):
         self._menus()
         self.ir_a_perfiles()
         from PySide6.QtCore import QTimer
-        QTimer.singleShot(0, self.act.ofrecer_importar_si_nuevo)
+        self.intro = None
+        if self.cfg.g.get("intro", "si") == "si" and not os.environ.get("SIMULADOR_SIN_INTRO"):
+            intro = Intro(self, self.base / "recursos" / "intro")
+            if intro.valida:
+                self.intro = intro
+                intro.terminada.connect(self._tras_intro)
+        if self.intro is None:
+            QTimer.singleShot(0, self._tras_intro)
+
+    def showEvent(self, ev):
+        super().showEvent(ev)
+        if self.intro is not None and not self.intro.iniciada:
+            QTimer.singleShot(0, self.intro.empezar)
+
+    def resizeEvent(self, ev):
+        super().resizeEvent(ev)
+        if self.intro is not None and self.intro.isVisible():
+            self.intro.setGeometry(self.rect())
+
+    def _tras_intro(self):
+        self.intro = None
+        self.act.ofrecer_importar_si_nuevo()
         self.act.al_arrancar()
+
+    def _toggle_intro(self, valor: bool):
+        self.cfg.g["intro"] = "si" if valor else "no"
+        self.cfg.guardar()
 
     # ---------------------------------------------------------------- navegación y perfiles
 
@@ -568,6 +616,10 @@ class Ventana(QMainWindow):
         self.chk_traducidas.setChecked(self.imagenes.traducir)
         self.chk_traducidas.toggled.connect(self._toggle_traducidas)
         m.addAction(self.chk_traducidas)
+        chk_intro = QAction(tx("ver_intro"), self, checkable=True)
+        chk_intro.setChecked(self.cfg.g.get("intro", "si") == "si")
+        chk_intro.toggled.connect(self._toggle_intro)
+        m.addAction(chk_intro)
         m.addSeparator()
         m.addAction(tx("salir"), self.close)
         if hasattr(self, "act"):

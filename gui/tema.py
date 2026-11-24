@@ -11,7 +11,8 @@ ORO_OSCURO = "#a87d27"
 ROJO = "#c0533f"
 
 QSS = f"""
-QMainWindow, QDialog, QWidget#pagina {{ background:{FONDO}; }}
+QMainWindow, QDialog {{ background:{FONDO}; }}
+QWidget#pagina {{ background:transparent; }}
 QWidget {{ color:{TEXTO}; font-size:13px; }}
 QLabel {{ background:transparent; }}
 QMenuBar {{ background:{PANEL}; color:{TEXTO}; border-bottom:1px solid {BORDE}; }}
