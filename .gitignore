@@ -1,12 +1,14 @@
-dist/
-build/
-salida/
+/dist/
+/build/
+/salida/
 __pycache__/
 *.pyc
-config.ini
-perfiles/
-mazos/
-fundas/
-imagenes/
-datos/cartas.json
-datos/traducciones/
+.pytest_cache/
+# datos de usuario (nunca se suben)
+/config.ini
+/perfiles/
+/mazos/
+/fundas/
+/imagenes/
+/datos/cartas.json
+/datos/traducciones/

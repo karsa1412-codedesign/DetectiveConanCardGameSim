@@ -1,0 +1,21 @@
+{
+ "nombre": "Demo rojo",
+ "companero": "DEMO-P02",
+ "caso": "DEMO-C02",
+ "cartas": {
+  "DEMO-R01": 3,
+  "DEMO-R02": 3,
+  "DEMO-R03": 3,
+  "DEMO-R04": 3,
+  "DEMO-R05": 3,
+  "DEMO-R06": 3,
+  "DEMO-R07": 3,
+  "DEMO-R08": 3,
+  "DEMO-R09": 3,
+  "DEMO-R10": 3,
+  "DEMO-R11": 3,
+  "DEMO-R12": 3,
+  "DEMO-RE1": 2,
+  "DEMO-RE2": 2
+ }
+}

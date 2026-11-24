@@ -1,0 +1,36 @@
+{
+ "nombre": "CT-D10 Shuffle Romance (シャッフルロマンス)",
+ "companero": "D10001",
+ "companeros_alternativos": [
+  "D10002"
+ ],
+ "caso": "D10026",
+ "cartas": {
+  "D10003": 1,
+  "D10004": 2,
+  "D10005": 1,
+  "D10006": 2,
+  "D10007": 1,
+  "D10008": 1,
+  "D10009": 1,
+  "D10010": 2,
+  "D10011": 3,
+  "D10012": 3,
+  "D10013": 1,
+  "D10014": 1,
+  "D10015": 2,
+  "D10016": 1,
+  "D10017": 2,
+  "D10018": 1,
+  "D10019": 2,
+  "D10020": 1,
+  "D10021": 1,
+  "D10022": 2,
+  "D10023": 3,
+  "D10024": 3,
+  "D10025": 3
+ },
+ "descripcion": "Mazo temático oficial azul. Recuento según la imagen «収録内容» de la página oficial del producto.",
+ "preconstruido": true,
+ "paquete": "CT-D10"
+}

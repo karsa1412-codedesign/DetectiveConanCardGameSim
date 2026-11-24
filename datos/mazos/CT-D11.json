@@ -1,0 +1,31 @@
+{
+ "nombre": "CT-D11 千速と重悟の婚活パーティー",
+ "companero": "D11001",
+ "companeros_alternativos": [
+  "D11002"
+ ],
+ "caso": "D11021",
+ "cartas": {
+  "D11003": 1,
+  "D11004": 2,
+  "D11005": 1,
+  "D11006": 2,
+  "D11007": 1,
+  "D11008": 2,
+  "D11009": 1,
+  "D11010": 2,
+  "D11011": 3,
+  "D11012": 3,
+  "D11013": 3,
+  "D11014": 3,
+  "D11015": 3,
+  "D11016": 3,
+  "D11017": 3,
+  "D11018": 3,
+  "D11019": 2,
+  "D11020": 2
+ },
+ "descripcion": "Mazo temático oficial amarillo. Recuento según la imagen «収録内容» de la página oficial del producto.",
+ "preconstruido": true,
+ "paquete": "CT-D11"
+}
