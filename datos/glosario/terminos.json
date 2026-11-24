@@ -1,0 +1,103 @@
+{
+ "nota": "Términos fijos que no se mandan a DeepL. Se pueden corregir aquí.",
+ "iconos": {
+  "es": {
+   "【スリープ】": "[Dormir]",
+   "【宣言】": "[Declarar]",
+   "【ターン1】": "[1 vez por turno]",
+   "【ターン2】": "[2 veces por turno]",
+   "【登場時】": "[Al entrar]",
+   "【カットイン】": "[Irrupción]",
+   "【解決編】": "[Resolución]",
+   "【事件編】": "[Fase Caso]",
+   "【ヒラメキ】": "[Inspiración]",
+   "【自分ターン中】": "[Tu turno]",
+   "【相手ターン中】": "[Turno rival]",
+   "【事件解決】": "[Resolver el caso]",
+   "【アシスト】": "[Asistir]",
+   "【現場リムーブ時】": "[Al salir de escena]",
+   "【疾風】": "[Ráfaga]",
+   "【変装】": "[Disfraz]",
+   "【変装時】": "[Al disfrazarse]",
+   "【証拠隠滅】": "[Destruir pruebas]"
+  },
+  "ca": {
+   "【スリープ】": "[Adormir]",
+   "【宣言】": "[Declarar]",
+   "【ターン1】": "[1 cop per torn]",
+   "【ターン2】": "[2 cops per torn]",
+   "【登場時】": "[En entrar]",
+   "【カットイン】": "[Irrupció]",
+   "【解決編】": "[Resolució]",
+   "【事件編】": "[Fase Cas]",
+   "【ヒラメキ】": "[Inspiració]",
+   "【自分ターン中】": "[El teu torn]",
+   "【相手ターン中】": "[Torn rival]",
+   "【事件解決】": "[Resoldre el cas]",
+   "【アシスト】": "[Assistir]",
+   "【現場リムーブ時】": "[En sortir d'escena]",
+   "【疾風】": "[Ràfega]",
+   "【変装】": "[Disfressa]",
+   "【変装時】": "[En disfressar-se]",
+   "【証拠隠滅】": "[Destruir proves]"
+  }
+ },
+ "claves": {
+  "es": {
+   "迅速": "Rapidez",
+   "突撃": "Asalto",
+   "突撃キャラ": "Asalto [Personaje]",
+   "突撃事件": "Asalto [Caso]",
+   "ブレット": "Bala",
+   "ミスリード": "Pista falsa",
+   "捜査": "Investigación",
+   "痕跡": "Rastro",
+   "青": "azul",
+   "赤": "rojo",
+   "緑": "verde",
+   "黄": "amarillo",
+   "白": "blanco",
+   "黒": "negro"
+  },
+  "ca": {
+   "迅速": "Rapidesa",
+   "突撃": "Assalt",
+   "突撃キャラ": "Assalt [Personatge]",
+   "突撃事件": "Assalt [Cas]",
+   "ブレット": "Bala",
+   "ミスリード": "Pista falsa",
+   "捜査": "Investigació",
+   "痕跡": "Rastre",
+   "青": "blau",
+   "赤": "vermell",
+   "緑": "verd",
+   "黄": "groc",
+   "白": "blanc",
+   "黒": "negre"
+  }
+ },
+ "plantillas": {
+  "es": {
+   "file": "[FILE {n}]",
+   "companero": "[Compañero {color}]",
+   "caso_color": "[Caso {color}]",
+   "rasgo": "«Rasgo: {x}»",
+   "nombre": "«Nombre: {x}»",
+   "vinculo": "[Vínculo: {x}]",
+   "y": " y ",
+   "turno": "[{n} veces por turno]",
+   "o_mas": "[{n} o más]"
+  },
+  "ca": {
+   "file": "[FILE {n}]",
+   "companero": "[Company {color}]",
+   "caso_color": "[Cas {color}]",
+   "rasgo": "«Tret: {x}»",
+   "nombre": "«Nom: {x}»",
+   "vinculo": "[Vincle: {x}]",
+   "y": " i ",
+   "turno": "[{n} cops per torn]",
+   "o_mas": "[{n} o més]"
+  }
+ }
+}

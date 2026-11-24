@@ -1,0 +1,809 @@
+{
+ "version": 1,
+ "narrador": "Marta",
+ "catalogo": "cartas_demo.json",
+ "semilla": 1,
+ "primero": 0,
+ "mazos": {
+  "0": {
+   "mazo": "demo_azul.json",
+   "arriba": [
+    "DEMO-A03",
+    "DEMO-A01",
+    "DEMO-A05",
+    "DEMO-A07",
+    "DEMO-A08",
+    "DEMO-AE2",
+    "DEMO-A06",
+    "DEMO-A12",
+    "DEMO-A11",
+    "DEMO-A10"
+   ]
+  },
+  "1": {
+   "mazo": "demo_rojo.json",
+   "arriba": [
+    "DEMO-R02",
+    "DEMO-R09",
+    "DEMO-R08",
+    "DEMO-R07",
+    "DEMO-R10"
+   ]
+  }
+ },
+ "pasos": [
+  {
+   "texto": {
+    "es": "¡Hola! Soy Marta y te voy a acompañar en tu primera partida. Tranquilo, no hace falta memorizar nada: iremos paso a paso y cada jugada la harás tú. Cuando quieras seguir, pulsa «Continuar»."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "La idea es sencilla: aquí eres el detective. Ganas cuando tu Caso está en «Resolución», tienes tantas Pruebas como pide y tu Compañero lo resuelve. Este Caso pide 7 Pruebas porque empiezas tú; si jugaras segundo, serían 6."
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Echa un vistazo a tu lado del tablero, el de abajo. A la izquierda tienes el Caso y el Compañero. Al lado, los contadores de Mazo, FILE y Pruebas, y el botón del Descarte, donde acaban las cartas retiradas y los Eventos usados."
+   },
+   "resaltar": [
+    "caso:0",
+    "companero:0",
+    "info:0",
+    "descarte:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "A la derecha está la Escena, donde pondrás a tus Personajes: como mucho cinco. Debajo, tu mano. El rival tiene lo mismo arriba, aunque su mano, claro, no la ves."
+   },
+   "resaltar": [
+    "escena:0",
+    "mano:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora lo más importante para entender el ritmo de la partida: FILE. Son cartas boca abajo que se van acumulando cada turno, y su número marca el nivel máximo de lo que puedes jugar. Con 3 cartas en FILE, puedes jugar cartas de nivel 3 o menos. El número grande de arriba a la izquierda de cada carta es su nivel."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Antes de empezar, cada jugador roba 5 cartas. Una sola vez puedes devolver las que no te convenzan y robar otras tantas. Esta mano es buena, ¿eh? Pulsa «Quedarme esta mano»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Mulligan",
+    "cartas": []
+   },
+   "resaltar": [
+    "mano:0",
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival también decide si cambia cartas. Se queda la suya. Pulsa «Continuar» para empezar."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Mulligan",
+    "cartas": []
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Empieza tu turno 1. Al principio de cada turno hay una fase automática: tus cartas se reactivan, robas una carta y pones cartas del mazo en FILE. Normalmente son dos, pero el primer jugador, en su primer turno, solo pone una. Por eso ahora tienes 1 en FILE y 6 cartas en la mano."
+   },
+   "resaltar": [
+    "info:0",
+    "mano:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Vamos a poner a alguien en escena. «Chico del barrio» es de nivel 1, igual que tus cartas en FILE, y es azul como tu Caso: el color tiene que coincidir. Pulsa sobre la carta y elige «Jugar»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-A03"
+   },
+   "resaltar": [
+    "carta:DEMO-A03"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Dos detalles. Solo puedes jugar una carta de la mano por turno. Y un Personaje que acaba de llegar normalmente no puede actuar ese turno, pero este chico tiene «Rapidez», una habilidad que se salta esa norma. Si pasas el ratón por encima de una carta verás sus datos y sus habilidades."
+   },
+   "resaltar": [
+    "escena:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Así que vamos a Deducir con él. Al Deducir, el Personaje se duerme (se queda tumbado) y ganas tantas Pruebas como su LP. Tiene LP 1. Pulsa sobre él y elige «Deducir»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "DEMO-A03"
+   },
+   "resaltar": [
+    "carta:DEMO-A03"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Primera Prueba! Tu Compañero también puede Deducir, y su LP también es 1. Pulsa sobre él."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Las Pruebas salen de la parte de arriba de tu mazo y se quedan boca abajo; solo cuenta cuántas tienes. Ya llevas 2. Y fíjate en que el Chico y el Compañero ahora aparecen tumbados: están dormidos hasta tu próximo turno."
+   },
+   "resaltar": [
+    "info:0",
+    "escena:0",
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Por hoy está bien. Pulsa «Terminar turno»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Turno del rival. Como juega segundo, ya en su primer turno pone dos cartas en FILE, así que puede jugar cartas de nivel 2 o menos. Saca a «Camarero discreto», de nivel 1."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-R02"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El Camarero acaba de llegar y no tiene Rapidez, así que no puede actuar este turno. El rival Deduce con su Compañera y consigue 1 Prueba."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y termina su turno."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Vuelves tú. Fase automática: tu Chico y tu Compañero se reactivan, robas una carta y ahora sí entran dos en FILE: ya tienes 3."
+   },
+   "resaltar": [
+    "escena:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Toca aprender a atacar. Una «Acción» la hace un Personaje activo, y puede ir contra un Personaje rival dormido o aturdido, o contra el Caso rival si tiene al menos una Prueba. Si atacas al Caso y sale bien, el rival pierde una Prueba y tú ganas otra."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "El rival tiene 1 Prueba, así que vamos a por su Caso. Pulsa sobre tu Chico y elige la Acción contra el Caso rival."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Atacar",
+    "carta": "DEMO-A03",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "carta:DEMO-A03"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Ojo! El rival puede «Guardar»: duerme a uno de sus Personajes activos para que se interponga. Lo hace con el Camarero, que puede guardar aunque acabe de llegar. Cuando hay Guardia, el ataque se convierte en un Contacto entre los dos Personajes."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Guardia",
+    "carta": "DEMO-R02"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "En el Contacto se compara el AP. Tu Chico tiene 2000 y el Camarero 3000. Empieza quien tenga menos AP, o sea, tú. Cada jugador puede usar desde la mano una carta con «Irrupción» para subir el AP de su Personaje."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Tienes a «Aprendiz de detective», con Irrupción AP+2000. Úsala y tu Chico pasará a 4000."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar",
+    "carta": "DEMO-A01",
+    "modo": "irrupcion"
+   },
+   "resaltar": [
+    "carta:DEMO-A01"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival no tiene con qué responder y pasa."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Resultado: si el AP del atacante es igual o mayor que el del defensor, el defensor se retira. 4000 contra 3000: ¡fuera Camarero! El atacante nunca se retira; como mucho, se queda sin conseguir nada. La subida de AP solo dura este Contacto."
+   },
+   "resaltar": [
+    "escena:1",
+    "descarte:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Como hubo Guardia, el Caso rival se libra esta vez: no hay robo de Prueba. Aun así, le has quitado su único Personaje."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Todavía no has jugado de la mano este turno. «Bibliotecario» es de nivel 2 y tiene LP 2: buen deductor. Ponlo en escena."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-A05"
+   },
+   "resaltar": [
+    "carta:DEMO-A05"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Tu Compañero sigue activo. Deduce con él otra vez."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Listo. Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival ya tiene 4 cartas en FILE y saca a «Experta en artes marciales»: nivel 4 y 7000 de AP. Va a dar guerra."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-R09"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduce con su Compañera: ya tiene 2 Pruebas."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Fin de su turno."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 5. Tienes 5 cartas en FILE, y te voy a enseñar un truco: «Siguiente pista»."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Con Siguiente pista coges la carta de arriba de FILE, te la llevas a la mano y, justo después, puedes jugar una carta cuyo nivel no supere lo que queda en FILE. Tiene un precio: FILE baja una carta y ese turno ya no puedes jugar de la mano de la forma normal. Pulsa «Siguiente pista»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "SiguientePista"
+   },
+   "resaltar": [
+    "acciones",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Te quedan 4 en FILE. Juega a «Inspector veterano», de nivel 4."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-A08"
+   },
+   "resaltar": [
+    "carta:DEMO-A08"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora a sumar Pruebas. Deduce con el Bibliotecario: LP 2."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "DEMO-A05"
+   },
+   "resaltar": [
+    "carta:DEMO-A05"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora con el Chico."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "DEMO-A03"
+   },
+   "resaltar": [
+    "carta:DEMO-A03"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y con el Compañero."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ya tienes 7 Pruebas, justo las que pide tu Caso. Pero todavía no puedes ganar: el Caso tiene que estar en Resolución. Enseguida lo vemos."
+   },
+   "resaltar": [
+    "caso:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El Inspector se queda activo, sin hacer nada. Eso tiene su lado bueno, y lo vas a ver ahora mismo. Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival pone en escena a «Agente encubierto»."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-R08"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y su Experta hace una Acción contra tu Caso. Si no haces nada, perderás una Prueba y él ganará una."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Atacar",
+    "carta": "DEMO-R09",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Para esto dejamos al Inspector activo: Guarda con él."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Guardia",
+    "carta": "DEMO-A08"
+   },
+   "resaltar": [
+    "carta:DEMO-A08",
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Contacto: tu Inspector tiene 6000 y la Experta 7000. Tienes menos AP, así que actúas tú primero."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Usa la Irrupción del «Fotógrafo de prensa»: AP+3000."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar",
+    "carta": "DEMO-A07",
+    "modo": "irrupcion"
+   },
+   "resaltar": [
+    "carta:DEMO-A07"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival pasa."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "9000 contra 7000: el atacante no llega, así que no pasa nada. Tu Caso conserva todas sus Pruebas. Eso sí, el Inspector se ha dormido al Guardar."
+   },
+   "resaltar": [
+    "escena:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival Deduce con su Compañera: 3 Pruebas."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Y termina."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 7. Tienes 6 cartas en FILE. Fíjate en la Experta rival: está dormida porque atacó. Y a un Personaje dormido se le puede atacar."
+   },
+   "resaltar": [
+    "escena:1",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Haz una Acción con el Inspector contra la Experta."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Atacar",
+    "carta": "DEMO-A08",
+    "objetivo": "DEMO-R09"
+   },
+   "resaltar": [
+    "carta:DEMO-A08"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival Guarda con su Agente encubierto, que tiene 6000 de AP, igual que tu Inspector."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Guardia",
+    "carta": "DEMO-R08"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Con empate de AP, empieza el jugador que no tiene el turno: el rival."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "El rival pasa."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Te toca. Usa «Reconstruir los hechos», un Evento con Irrupción AP+4000. Las Irrupciones no tienen que ser del color de tu Caso."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar",
+    "carta": "DEMO-AE2",
+    "modo": "irrupcion"
+   },
+   "resaltar": [
+    "carta:DEMO-AE2"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Como el rival pasó y tú has actuado, el reglamento le da otra oportunidad de responder. Vuelve a pasar."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "10000 contra 6000: el Agente se retira. Bien jugado."
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y ahora, la clave de la partida: «Asistir». Tu Compañero se duerme y se va a FILE como una carta más. Si con él llegas a 7 cartas en FILE, tu Caso pasa a Resolución. Tienes 6… Pulsa sobre el Compañero y elige Asistir."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Asistir"
+   },
+   "resaltar": [
+    "companero:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Tu Caso ya está en Resolución! Es permanente: ya no vuelve atrás. Pero como el Compañero se ha dormido al Asistir, tendrás que esperar a tu próximo turno para resolver."
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Mientras tanto, más Pruebas por si el rival te roba alguna. Deduce con el Bibliotecario."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "DEMO-A05"
+   },
+   "resaltar": [
+    "carta:DEMO-A05"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y con el Chico."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "DEMO-A03"
+   },
+   "resaltar": [
+    "carta:DEMO-A03"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Saca a «Detective privado», de nivel 5. Puedes porque el Compañero también cuenta como carta de FILE: tienes 7."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "DEMO-A10"
+   },
+   "resaltar": [
+    "carta:DEMO-A10"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Último intento del rival: su Experta, que ya se ha reactivado, ataca a tu Caso."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Atacar",
+    "carta": "DEMO-R09",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Podrías Guardar con el Detective, pero te sobran Pruebas. Vamos a ver qué pasa si no guardas: pulsa «No guardar»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Guardia"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Pierdes 1 Prueba y el rival gana una. Te quedan 9, más de las que necesitas. A veces no guardar es buena idea: el Detective sigue activo y sin riesgo."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "El rival Deduce con su Compañera."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Y termina su turno."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Tu turno. En la fase automática, el Compañero vuelve de FILE y se reactiva. Tienes el Caso en Resolución y 9 Pruebas de las 7 que pide."
+   },
+   "resaltar": [
+    "companero:0",
+    "caso:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ya sabes lo que toca: pulsa sobre el Compañero y elige «Resolver el caso»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "ResolverCaso"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Caso resuelto! Has ganado tu primera partida. Ya conoces lo básico: FILE y niveles, color, Deducir, Acción, Guardia, Contacto, Irrupción, Siguiente pista, Asistir y Resolver. Las cartas reales tienen además sus propios efectos, que se explican en su texto. Puedes repetir este tutorial cuando quieras desde el menú. ¡Nos vemos!"
+   },
+   "resaltar": []
+  }
+ ]
+}

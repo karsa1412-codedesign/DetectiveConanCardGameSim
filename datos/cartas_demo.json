@@ -1,0 +1,522 @@
+{
+ "version": 1,
+ "nota": "Cartas inventadas para probar el simulador. No son cartas reales.",
+ "cartas": [
+  {
+   "id": "DEMO-A01",
+   "nombre": {
+    "es": "Aprendiz de detective",
+    "ca": "Aprenent de detectiu"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 0,
+   "ap": 2000,
+   "lp": 1,
+   "rasgos": [],
+   "irrupcion_ap": 2000
+  },
+  {
+   "id": "DEMO-A02",
+   "nombre": {
+    "es": "Estudiante curiosa",
+    "ca": "Estudiant curiosa"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 1,
+   "ap": 3000,
+   "lp": 1,
+   "rasgos": [],
+   "inspiracion": true
+  },
+  {
+   "id": "DEMO-A03",
+   "nombre": {
+    "es": "Chico del barrio",
+    "ca": "Noi del barri"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 1,
+   "ap": 2000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "rapidez": true
+   }
+  },
+  {
+   "id": "DEMO-A04",
+   "nombre": {
+    "es": "Profesora de ciencias",
+    "ca": "Professora de ciències"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 2,
+   "ap": 4000,
+   "lp": 1,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-A05",
+   "nombre": {
+    "es": "Bibliotecario",
+    "ca": "Bibliotecari"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 2,
+   "ap": 3000,
+   "lp": 2,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-A06",
+   "nombre": {
+    "es": "Reportera tenaz",
+    "ca": "Reportera tenaç"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 3,
+   "ap": 5000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "pista_falsa": 1
+   }
+  },
+  {
+   "id": "DEMO-A07",
+   "nombre": {
+    "es": "Fotógrafo de prensa",
+    "ca": "Fotògraf de premsa"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 3,
+   "ap": 4000,
+   "lp": 2,
+   "rasgos": [],
+   "irrupcion_ap": 3000
+  },
+  {
+   "id": "DEMO-A08",
+   "nombre": {
+    "es": "Inspector veterano",
+    "ca": "Inspector veterà"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 4,
+   "ap": 6000,
+   "lp": 1,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-A09",
+   "nombre": {
+    "es": "Analista forense",
+    "ca": "Analista forense"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 4,
+   "ap": 4000,
+   "lp": 2,
+   "rasgos": [],
+   "inspiracion": true
+  },
+  {
+   "id": "DEMO-A10",
+   "nombre": {
+    "es": "Detective privado",
+    "ca": "Detectiu privat"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 5,
+   "ap": 7000,
+   "lp": 2,
+   "rasgos": [],
+   "palabras_clave": {
+    "asalto": true
+   }
+  },
+  {
+   "id": "DEMO-A11",
+   "nombre": {
+    "es": "Comisaria",
+    "ca": "Comissària"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 6,
+   "ap": 8000,
+   "lp": 2,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-A12",
+   "nombre": {
+    "es": "Genio de la deducción",
+    "ca": "Geni de la deducció"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 7,
+   "ap": 8000,
+   "lp": 3,
+   "rasgos": [],
+   "palabras_clave": {
+    "rapidez": true
+   }
+  },
+  {
+   "id": "DEMO-R01",
+   "nombre": {
+    "es": "Agente en prácticas",
+    "ca": "Agent en pràctiques"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 0,
+   "ap": 2000,
+   "lp": 1,
+   "rasgos": [],
+   "irrupcion_ap": 2000
+  },
+  {
+   "id": "DEMO-R02",
+   "nombre": {
+    "es": "Camarero discreto",
+    "ca": "Cambrer discret"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 1,
+   "ap": 3000,
+   "lp": 1,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-R03",
+   "nombre": {
+    "es": "Mensajero veloz",
+    "ca": "Missatger veloç"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 1,
+   "ap": 2000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "asalto": true
+   }
+  },
+  {
+   "id": "DEMO-R04",
+   "nombre": {
+    "es": "Atleta del instituto",
+    "ca": "Atleta de l'institut"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 2,
+   "ap": 5000,
+   "lp": 0,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-R05",
+   "nombre": {
+    "es": "Taxista nocturno",
+    "ca": "Taxista nocturn"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 2,
+   "ap": 4000,
+   "lp": 1,
+   "rasgos": [],
+   "inspiracion": true
+  },
+  {
+   "id": "DEMO-R06",
+   "nombre": {
+    "es": "Ladrón de guante blanco",
+    "ca": "Lladre de guant blanc"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 3,
+   "ap": 5000,
+   "lp": 1,
+   "rasgos": [],
+   "disfraz": true
+  },
+  {
+   "id": "DEMO-R07",
+   "nombre": {
+    "es": "Guardaespaldas",
+    "ca": "Guardaespatlles"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 3,
+   "ap": 6000,
+   "lp": 0,
+   "rasgos": [],
+   "irrupcion_ap": 3000
+  },
+  {
+   "id": "DEMO-R08",
+   "nombre": {
+    "es": "Agente encubierto",
+    "ca": "Agent encobert"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 4,
+   "ap": 6000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "bala": true
+   }
+  },
+  {
+   "id": "DEMO-R09",
+   "nombre": {
+    "es": "Experta en artes marciales",
+    "ca": "Experta en arts marcials"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 4,
+   "ap": 7000,
+   "lp": 1,
+   "rasgos": []
+  },
+  {
+   "id": "DEMO-R10",
+   "nombre": {
+    "es": "Francotirador",
+    "ca": "Franctirador"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 5,
+   "ap": 8000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "bala": true
+   }
+  },
+  {
+   "id": "DEMO-R11",
+   "nombre": {
+    "es": "Jefe de seguridad",
+    "ca": "Cap de seguretat"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 6,
+   "ap": 9000,
+   "lp": 1,
+   "rasgos": [],
+   "palabras_clave": {
+    "pista_falsa": 2
+   }
+  },
+  {
+   "id": "DEMO-R12",
+   "nombre": {
+    "es": "Maestro del disfraz",
+    "ca": "Mestre de la disfressa"
+   },
+   "tipo": "personaje",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 7,
+   "ap": 9000,
+   "lp": 2,
+   "rasgos": [],
+   "disfraz": true,
+   "palabras_clave": {
+    "rapidez": true
+   }
+  },
+  {
+   "id": "DEMO-AE1",
+   "nombre": {
+    "es": "Revisar el informe",
+    "ca": "Revisar l'informe"
+   },
+   "tipo": "evento",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 2,
+   "texto": {
+    "es": "Roba 1 carta.",
+    "ca": "Roba 1 carta."
+   }
+  },
+  {
+   "id": "DEMO-RE1",
+   "nombre": {
+    "es": "Persecución",
+    "ca": "Persecució"
+   },
+   "tipo": "evento",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 3,
+   "texto": {
+    "es": "Duerme a 1 Personaje rival de AP 5000 o menos.",
+    "ca": "Adorm 1 Personatge rival d'AP 5000 o menys."
+   }
+  },
+  {
+   "id": "DEMO-P01",
+   "nombre": {
+    "es": "Compañero de demostración",
+    "ca": "Company de demostració"
+   },
+   "tipo": "companero",
+   "colores": [
+    "azul"
+   ],
+   "lp": 1
+  },
+  {
+   "id": "DEMO-P02",
+   "nombre": {
+    "es": "Compañera de demostración",
+    "ca": "Companya de demostració"
+   },
+   "tipo": "companero",
+   "colores": [
+    "rojo"
+   ],
+   "lp": 1
+  },
+  {
+   "id": "DEMO-C01",
+   "nombre": {
+    "es": "El caso del reloj parado",
+    "ca": "El cas del rellotge aturat"
+   },
+   "tipo": "caso",
+   "colores": [
+    "azul"
+   ],
+   "nivel_caso": [
+    7,
+    6
+   ]
+  },
+  {
+   "id": "DEMO-C02",
+   "nombre": {
+    "es": "El caso del tren nocturno",
+    "ca": "El cas del tren nocturn"
+   },
+   "tipo": "caso",
+   "colores": [
+    "rojo"
+   ],
+   "nivel_caso": [
+    7,
+    6
+   ]
+  },
+  {
+   "id": "DEMO-AE2",
+   "nombre": {
+    "es": "Reconstruir los hechos",
+    "ca": "Reconstruir els fets"
+   },
+   "tipo": "evento",
+   "colores": [
+    "azul"
+   ],
+   "nivel": 4,
+   "irrupcion_ap": 4000,
+   "texto": {
+    "es": "Irrupción AP+4000.",
+    "ca": "Irrupció AP+4000."
+   }
+  },
+  {
+   "id": "DEMO-RE2",
+   "nombre": {
+    "es": "Golpe por sorpresa",
+    "ca": "Cop per sorpresa"
+   },
+   "tipo": "evento",
+   "colores": [
+    "rojo"
+   ],
+   "nivel": 4,
+   "irrupcion_ap": 4000,
+   "texto": {
+    "es": "Irrupción AP+4000.",
+    "ca": "Irrupció AP+4000."
+   }
+  }
+ ]
+}
