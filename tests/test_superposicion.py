@@ -9,7 +9,8 @@ QtGui = pytest.importorskip("PySide6.QtGui")
 from core.cartas import CartaDef  # noqa: E402
 from gui.superposicion import componer  # noqa: E402
 
-_app = QtGui.QGuiApplication.instance() or QtGui.QGuiApplication([])
+QtWidgets = pytest.importorskip("PySide6.QtWidgets")
+_app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
 
 def _carta(tipo="personaje", **kw):

@@ -351,6 +351,20 @@ class Mesa(QGraphicsView):
         super().showEvent(ev)
         self.fitInView(self.escena.sceneRect(), Qt.KeepAspectRatio)
 
+    def vaciar(self):
+        """Quita todas las cartas y montones: la siguiente partida empieza con la mesa limpia."""
+        self.animaciones.stop()
+        for it in list(self.items_carta.values()):
+            self.escena.removeItem(it)
+        self.items_carta.clear()
+        for pila in list(self.pilas.values()):
+            self.escena.removeItem(pila)
+        self.pilas.clear()
+        self.zonas_resaltadas, self.zonas_objetivo = set(), set()
+        self.linea_contacto.setVisible(False)
+        self.motor = None
+        self.escena.update()
+
     # --------------------------------------------------------- utilidades
     def _lado(self, jugador: int) -> int:
         return 0 if jugador == 0 else 1

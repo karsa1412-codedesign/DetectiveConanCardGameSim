@@ -68,3 +68,33 @@ def test_perfiles_y_registro(tmp_path):
     assert not gp2.es_nuevo("Albert") and gp2.perfiles["Albert"]["accesos"] == 1
     eventos = [r["evento"] for r in gp2.leer_registro("Albert")]
     assert eventos == ["perfil_creado", "inicio_sesion", "tutorial_saltado"]
+
+
+def test_salir_y_volver_empieza_de_cero(tmp_path, monkeypatch):
+    import os
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    pytest.importorskip("PySide6.QtWidgets")
+    from PySide6.QtWidgets import QApplication, QMessageBox
+    from core.rutas import Rutas
+    import gui.ventana as gv
+    app = QApplication.instance() or QApplication([])
+    monkeypatch.setenv("SIMULADOR_SIN_INTRO", "1")
+    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.Yes)
+    raiz = Path(__file__).resolve().parent.parent
+    v = gv.Ventana(Rutas(raiz, tmp_path))
+    v.perfiles.crear("A")
+    v.perfiles.actualizar("A", tutorial_recomendado=True)
+    v.act._cfg("importacion_preguntada", "si")
+    v.entrar_perfil("A")
+    v.iniciar_tutorial()
+    for _ in range(15):
+        g = v.guion
+        v.ejecutar(g.esperadas()[0]) if g.tipo() == "usuario" else v.tutorial_continuar()
+    uids_antes = set(v.mesa.items_carta)
+    v.volver_al_menu()
+    assert v.mesa.items_carta == {} and v.motor is None
+    v.iniciar_tutorial()
+    assert v.guion.indice == 0 and v.motor.p.turno == 0
+    assert all(it.pos() == it.pos() for it in v.mesa.items_carta.values())
+    assert set(v.mesa.items_carta) and uids_antes          # se han creado de nuevo
+    v.close()

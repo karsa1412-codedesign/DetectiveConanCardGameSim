@@ -476,6 +476,8 @@ class Ventana(QMainWindow):
 
     def ir_a_menu(self):
         self.motor = self.guion = self.modo = None
+        self.mesa.vaciar()
+        self.registro.clear()
         self.pag_menu.refrescar()
         self.pila.setCurrentWidget(self.pag_menu)
         self._menus()
@@ -737,6 +739,7 @@ class Ventana(QMainWindow):
         except ReglaError as e:
             QMessageBox.warning(self, self.tx("titulo"), str(e))
             return
+        self.mesa.vaciar()
         self.modo, self.guion = "local", None
         self.fin_registrado = False
         self.ultimo_decisor = None
@@ -752,6 +755,9 @@ class Ventana(QMainWindow):
         except Exception as e:  # datos del tutorial dañados o ausentes
             QMessageBox.warning(self, self.tx("titulo"), str(e))
             return
+        self.mesa.vaciar()
+        self.registro.clear()
+        self.ultimo_decisor = None
         self.motor = self.guion.motor
         self.modo = "tutorial"
         propia = self.funda_perfil()
