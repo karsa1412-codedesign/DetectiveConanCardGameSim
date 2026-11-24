@@ -1,0 +1,776 @@
+{
+ "version": 1,
+ "narrador": "Marta",
+ "catalogo": "usuario",
+ "semilla": 3,
+ "primero": 0,
+ "requiere": [
+  "CT-D10",
+  "CT-D11"
+ ],
+ "mazos": {
+  "0": {
+   "mazo": "CT-D10.json",
+   "companero": "D10001",
+   "arriba": [
+    "D10016",
+    "D10017",
+    "D10019",
+    "D10015",
+    "D10024"
+   ]
+  },
+  "1": {
+   "mazo": "CT-D11.json",
+   "companero": "D11001",
+   "arriba": [
+    "D11017",
+    "D11012",
+    "D11007",
+    "D11018",
+    "D11013"
+   ]
+  }
+ },
+ "pasos": [
+  {
+   "texto": {
+    "es": "¡Hola! Soy Marta. Hoy vamos a jugar con cartas de verdad: tú llevas el mazo temático azul (CT-D10) y yo el amarillo (CT-D11). Iremos paso a paso y cada jugada la harás tú. Pulsa «Continuar» cuando quieras."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Un aviso antes de empezar: casi todas las cartas reales tienen efectos impresos. En una partida normal los aplicas tú (pulsando sobre la carta tienes herramientas para ello), pero hoy nos centramos en las reglas, así que solo usaremos lo que cuento en cada paso."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Ganas cuando tu Caso está en «Resolución», tienes al menos tantas Pruebas como su nivel y tu Compañero lo resuelve. Tu Caso, {D10026}, pide 7 Pruebas porque empiezas tú; si jugaras segundo, serían 6."
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Tu lado es el de abajo. A la izquierda, el Caso y el Compañero ({D10001}). A la derecha, el Mazo, FILE, el Descarte y tus Pruebas. En el centro, la Escena, donde pondrás a tus Personajes (cinco como mucho). Debajo, tu mano."
+   },
+   "resaltar": [
+    "caso:0",
+    "companero:0",
+    "info:0",
+    "escena:0",
+    "mano:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "FILE es la clave del ritmo: son cartas boca abajo que se acumulan cada turno, y su número marca el nivel máximo de lo que puedes jugar. Con 3 cartas en FILE, juegas cartas de nivel 3 o menos. Además, la carta tiene que compartir color con tu Caso: aquí, azul."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Primero, la mano inicial: puedes devolver una vez las cartas que quieras y robar otras. Esta nos va bien: pulsa «Quedarme esta mano»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Mulligan",
+    "cartas": []
+   },
+   "resaltar": [
+    "mano:0",
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Yo también me quedo la mía. ¡Empezamos!"
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Mulligan",
+    "cartas": []
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 1. En la fase automática robas una carta y pones cartas en FILE: dos por turno, pero en el primer turno del que empieza, solo una. Con 1 carta en FILE no puedes jugar nada: en estos mazos lo más barato es de nivel 2."
+   },
+   "resaltar": [
+    "info:0",
+    "mano:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Lo que sí puedes hacer es Deducir con tu Compañero: se duerme (queda tumbado) y ganas tantas Pruebas como su LP, que es 1. Pulsa sobre él y elige «Deducir», o arrástralo a tus Pruebas."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Primera Prueba. Nada más que hacer: pulsa «Terminar turno»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Mi turno. Como juego segundo, pongo dos cartas en FILE desde el primer turno y saco a {D11017}, de nivel 2."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "D11017"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduzco con mi Compañera: 1 Prueba."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Y termino."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 3: ya tienes 3 cartas en FILE. Fíjate en que tu Compañero se ha reactivado (vuelve a estar vertical)."
+   },
+   "resaltar": [
+    "info:0",
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Juega a {D10016}: nivel 2, azul, AP 1000 y LP 1. Arrástralo a tu Escena o pulsa sobre él y elige «Jugar». Recuerda: solo una carta de la mano por turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "D10016"
+   },
+   "resaltar": [
+    "carta:D10016"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Un Personaje recién llegado no puede Deducir ni hacer Acción ese turno (salvo que tenga Rapidez o Asalto). Pero sí podrá defenderte en el turno rival, ya lo verás."
+   },
+   "resaltar": [
+    "escena:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduce otra vez con el Compañero."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora ataco: mi {D11017} hace una Acción contra tu Caso. Si sale bien, tú pierdes una Prueba y yo gano otra."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Atacar",
+    "carta": "D11017",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Puedes «Guardar»: duermes a uno de tus Personajes activos para que se interponga. Hazlo con {D10016}: arrástralo hacia mi lado o pulsa «Guardar»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Guardia",
+    "carta": "D10016"
+   },
+   "resaltar": [
+    "carta:D10016",
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Al Guardar hay un Contacto: se compara el AP. Los dos tenéis 1000. Con empate empieza quien no tiene el turno, o sea, tú. Cada uno puede usar desde la mano una carta con «Irrupción» para subir el AP de su Personaje."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "{D10017} tiene Irrupción AP+2000. Úsala: tu Personaje pasará a 3000."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar",
+    "carta": "D10017",
+    "modo": "irrupcion"
+   },
+   "resaltar": [
+    "carta:D10017"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Yo paso."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "El atacante solo gana si su AP es igual o mayor que el del defensor: 1000 contra 3000, no pasa nada. Tu Caso conserva sus Pruebas. La subida de AP solo dura ese Contacto."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Saco a {D11012}, de nivel 4 y AP 4000."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "D11012"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduzco con mi Compañera y termino."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Fin de mi turno."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 5: 5 cartas en FILE. Mi {D11017} está dormido porque atacó, y a un Personaje dormido se le puede atacar."
+   },
+   "resaltar": [
+    "escena:1",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Juega primero a {D10019}: otro Personaje de nivel 2 con AP 1000 y LP 1."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "D10019"
+   },
+   "resaltar": [
+    "carta:D10019"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora, Acción: arrastra a {D10016} sobre mi {D11017}, o pulsa sobre él y elige la Acción."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Atacar",
+    "carta": "D10016",
+    "objetivo": "D11017"
+   },
+   "resaltar": [
+    "carta:D10016"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Podría Guardar con {D11012}, pero no lo hago."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Guardia"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Contacto: 1000 contra 1000. Empata, así que empiezo yo, que no tengo el turno."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Paso."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Tú también: pulsa «Pasar en el Contacto»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Con empate gana el atacante: mi {D11017} se retira a mi Descarte. ¡Bien!"
+   },
+   "resaltar": [
+    "escena:1",
+    "descarte:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduce con el Compañero."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Saco a {D11007}: nivel 6, AP 5000 y «Asalto», que le permite hacer Acción el mismo turno en que entra."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "D11007"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y ataco tu Caso con él."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Atacar",
+    "carta": "D11007",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Tu {D10019} está activo y podría guardar, pero con 1000 de AP contra 5000 perdería. A veces es mejor no guardar: pulsa «No guardar»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Guardia"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Pierdes 1 Prueba y yo gano otra. Tu {D10019} sigue en juego para deducir el próximo turno."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduzco con mi Compañera."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Y termino."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Turno 7: 7 cartas en FILE. Te enseño un truco, «Siguiente pista»."
+   },
+   "resaltar": [
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Coges la carta de arriba de FILE y justo después puedes jugar una carta de nivel igual o menor que lo que queda en FILE. A cambio, FILE baja una carta y ese turno ya no juegas de la mano de forma normal. Pulsa «Siguiente pista» o arrastra tu FILE a la mano."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "SiguientePista"
+   },
+   "resaltar": [
+    "acciones",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Te quedan 6 en FILE. Juega a {D10015}: nivel 5, AP 5000 y también con «Asalto»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "JugarCarta",
+    "carta": "D10015"
+   },
+   "resaltar": [
+    "carta:D10015"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Gracias al Asalto puede atacar ya: arrástralo sobre mi Caso, o pulsa sobre él y elige la Acción contra el Caso rival."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Atacar",
+    "carta": "D10015",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "carta:D10015"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Guardo con {D11012} (AP 4000)."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Guardia",
+    "carta": "D11012"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "5000 contra 4000: tengo menos AP, así que empiezo yo en el Contacto."
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "No tengo Irrupción a mano. Paso."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Contactar"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Pasa tú también."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Contactar"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "5000 contra 4000: {D11012} se retira. Como hubo Guardia, mi Caso no pierde Prueba esta vez."
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Ahora, la clave: «Asistir». Tu Compañero se duerme y va a FILE como una carta más. Si con él llegas a 7, tu Caso pasa a Resolución. Tienes 6… Arrastra el Compañero a tu FILE, o pulsa sobre él y elige «Asistir»."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Asistir"
+   },
+   "resaltar": [
+    "companero:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Tu Caso está en Resolución, y ya no vuelve atrás! El Compañero vuelve en tu próximo turno, y entonces podrás resolver si tienes 7 Pruebas."
+   },
+   "resaltar": [
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Suma Pruebas: deduce con {D10016}."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "D10016"
+   },
+   "resaltar": [
+    "carta:D10016"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y con {D10019}."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "D10019"
+   },
+   "resaltar": [
+    "carta:D10019"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Termina el turno."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "FinTurno"
+   },
+   "resaltar": [
+    "acciones"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Saco a {D11018} y deduzco con mi Compañera."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "JugarCarta",
+    "carta": "D11018"
+   },
+   "resaltar": [
+    "escena:1"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduzco."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Deducir",
+    "carta": "companero"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Y termino mi turno."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "FinTurno"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Último turno. Tu Compañero ha vuelto de FILE y todos tus Personajes se han reactivado. Tienes 4 Pruebas y necesitas 7: vamos a por ellas."
+   },
+   "resaltar": [
+    "companero:0",
+    "caso:0",
+    "info:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Deduce con {D10016}: +1."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "D10016"
+   },
+   "resaltar": [
+    "carta:D10016"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Y con {D10019}: +1."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Deducir",
+    "carta": "D10019"
+   },
+   "resaltar": [
+    "carta:D10019"
+   ]
+  },
+  {
+   "texto": {
+    "es": "{D10015} tiene LP 0 y no suma deduciendo, pero puede atacar mi Caso y robarme una Prueba. ¡Adelante!"
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "Atacar",
+    "carta": "D10015",
+    "objetivo": "caso"
+   },
+   "resaltar": [
+    "carta:D10015"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Esta vez no guardo."
+   },
+   "rival": {
+    "jugador": 1,
+    "tipo": "Guardia"
+   },
+   "resaltar": []
+  },
+  {
+   "texto": {
+    "es": "Yo pierdo una Prueba y tú ganas otra: ¡ya tienes 7!"
+   },
+   "resaltar": [
+    "info:0",
+    "caso:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "Pulsa sobre tu Compañero y elige «Resolver el caso», o arrástralo sobre tu Caso."
+   },
+   "espera": {
+    "jugador": 0,
+    "tipo": "ResolverCaso"
+   },
+   "resaltar": [
+    "companero:0"
+   ]
+  },
+  {
+   "texto": {
+    "es": "¡Caso resuelto! Has ganado con cartas reales. Ya conoces lo básico: FILE y niveles, color, Deducir, Acción, Guardia, Contacto, Irrupción, Asalto, Siguiente pista, Asistir y Resolver. Ahora prueba una partida local y ve aplicando también los efectos impresos de las cartas. ¡Suerte, detective!"
+   },
+   "resaltar": []
+  }
+ ]
+}

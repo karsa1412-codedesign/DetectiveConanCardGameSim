@@ -751,7 +751,13 @@ class Ventana(QMainWindow):
 
     def iniciar_tutorial(self):
         try:
-            self.guion = Guion(self.base / "datos" / "tutorial" / "tutorial.json", self.base / "datos")
+            from core.tutorial import disponible
+            real = self.base / "datos" / "tutorial" / "tutorial_real.json"
+            if real.exists() and disponible(real, self.base / "datos", self.catalogo):
+                # con CT-D10 y CT-D11 descargados, el tutorial usa las cartas reales
+                self.guion = Guion(real, self.base / "datos", self.catalogo)
+            else:
+                self.guion = Guion(self.base / "datos" / "tutorial" / "tutorial.json", self.base / "datos")
         except Exception as e:  # datos del tutorial dañados o ausentes
             QMessageBox.warning(self, self.tx("titulo"), str(e))
             return

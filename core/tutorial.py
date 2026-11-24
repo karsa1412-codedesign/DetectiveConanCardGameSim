@@ -11,6 +11,7 @@ legales del motor: si el motor no permite una jugada del guion, el tutorial lo d
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from . import acciones as A
@@ -57,16 +58,34 @@ def coincide(motor: Motor, a: A.Accion, spec: dict) -> bool:
     return True
 
 
+def disponible(ruta: Path, base_datos: Path, catalogo: Catalogo) -> bool:
+    """¿Están en el catálogo todas las cartas que usa este guion?"""
+    datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
+    for idx in ("0", "1"):
+        m = datos["mazos"][idx]
+        mazo = Mazo.cargar(base_datos / "mazos" / m["mazo"])
+        ids = [m.get("companero") or mazo.companero, mazo.caso, *mazo.cartas]
+        if any(cid not in catalogo for cid in ids):
+            return False
+    return True
+
+
 class Guion:
-    def __init__(self, ruta: Path, base_datos: Path):
+    def __init__(self, ruta: Path, base_datos: Path, catalogo: Catalogo | None = None):
+        """catalogo: el de la app (cartas descargadas) para los guiones con cartas reales;
+        si no se da, se carga el archivo que indica el guion dentro de base_datos."""
         self.datos = json.loads(Path(ruta).read_text(encoding="utf-8"))
         self.pasos = self.datos["pasos"]
         self.indice = 0
-        cat = Catalogo.cargar(base_datos / self.datos["catalogo"])
+        cat = catalogo if catalogo is not None else Catalogo.cargar(base_datos / self.datos["catalogo"])
+        self.catalogo = cat
         mazos, arriba = [], {}
         for idx in (0, 1):
             m = self.datos["mazos"][str(idx)]
-            mazos.append(Mazo.cargar(base_datos / "mazos" / m["mazo"]))
+            mazo = Mazo.cargar(base_datos / "mazos" / m["mazo"])
+            if m.get("companero"):
+                mazo.companero = m["companero"]
+            mazos.append(mazo)
             arriba[idx] = m.get("arriba", [])
         self.motor = nueva_partida(cat, mazos[0], mazos[1], semilla=self.datos.get("semilla", 1),
                                    primero=self.datos["primero"], arriba=arriba)
@@ -87,7 +106,12 @@ class Guion:
         if p is None:
             return ""
         t = p["texto"]
-        return t.get(idioma) or t.get("es", "") if isinstance(t, dict) else t
+        t = (t.get(idioma) or t.get("es", "")) if isinstance(t, dict) else t
+        # {D10016} → nombre de la carta en el idioma elegido
+        def nombre(m):
+            cid = m.group(1)
+            return f"«{self.catalogo[cid].nombre_en(idioma)}»" if cid in self.catalogo else cid
+        return re.sub(r"\{([A-Z0-9-]+)\}", nombre, t)
 
     def tipo(self) -> str:
         p = self.paso

@@ -12,7 +12,9 @@ usuario, registro de accesos y dos modos de juego: **Tutorial** (partida guiada 
 
 - Al abrir la app se elige o se crea un **perfil**. La primera vez que entra un perfil nuevo,
   la app recomienda hacer el tutorial; se puede saltar.
-- **Tutorial**: partida guiada por Marta, siempre igual (pregrabada). Explica el campo, las
+- **Tutorial**: partida guiada por Marta, siempre igual (pregrabada). Si tienes descargadas CT-D10 y
+  CT-D11, se juega con esas cartas reales (`datos/tutorial/tutorial_real.json`); si no, con
+  cartas de práctica (`datos/tutorial/tutorial.json`), así funciona también sin descargar nada. Explica el campo, las
   reglas y las habilidades, resalta en naranja dónde mirar y solo deja hacer la jugada que toca:
   la hace el jugador, no la app. Las jugadas del rival se aplican al pulsar «Continuar».
   Se puede salir en cualquier momento y repetir desde el menú tantas veces como se quiera.

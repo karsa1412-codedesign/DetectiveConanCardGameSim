@@ -98,3 +98,56 @@ def test_salir_y_volver_empieza_de_cero(tmp_path, monkeypatch):
     assert all(it.pos() == it.pos() for it in v.mesa.items_carta.values())
     assert set(v.mesa.items_carta) and uids_antes          # se han creado de nuevo
     v.close()
+
+
+CT = Path(__file__).resolve().parent / "datos_prueba" / "cartas_ct.json"
+
+
+def test_tutorial_con_cartas_reales_termina_con_victoria():
+    from core.cartas import Catalogo
+    from core.tutorial import disponible
+    cat = Catalogo.cargar(DATOS / "cartas_demo.json", CT)
+    ruta = DATOS / "tutorial" / "tutorial_real.json"
+    assert disponible(ruta, DATOS, cat)
+    assert not disponible(ruta, DATOS, Catalogo.cargar(DATOS / "cartas_demo.json"))
+    g = Guion(ruta, DATOS, cat)
+    while not g.terminado:
+        if g.tipo() == "usuario":
+            esperadas = g.esperadas()
+            assert esperadas, f"paso {g.indice + 1}: el motor no permite la jugada pedida"
+            g.jugar_usuario(esperadas[0])
+        else:
+            g.continuar()
+    assert g.motor.p.ganador == 0 and len(g.motor.j(0).pruebas) == 7
+
+
+def test_nombres_de_carta_en_el_texto():
+    from core.cartas import Catalogo
+    g = Guion(DATOS / "tutorial" / "tutorial_real.json", DATOS, Catalogo.cargar(DATOS / "cartas_demo.json", CT))
+    g.indice = 2
+    assert "«D10026»" in g.texto("es") and "{" not in g.texto("es")
+
+
+def test_la_app_elige_el_tutorial_real_si_hay_cartas(tmp_path, monkeypatch):
+    import os
+    import shutil
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PySide6.QtWidgets import QApplication
+    from core.rutas import Rutas
+    import gui.ventana as gv
+    app = QApplication.instance() or QApplication([])
+    monkeypatch.setenv("SIMULADOR_SIN_INTRO", "1")
+    raiz = Path(__file__).resolve().parent.parent
+    for con_cartas in (False, True):
+        usuario = tmp_path / str(con_cartas)
+        (usuario / "datos").mkdir(parents=True)
+        if con_cartas:
+            shutil.copy(CT, usuario / "datos" / "cartas.json")
+        v = gv.Ventana(Rutas(raiz, usuario))
+        v.perfiles.crear("A")
+        v.perfiles.actualizar("A", tutorial_recomendado=True)
+        v.act._cfg("importacion_preguntada", "si")
+        v.entrar_perfil("A")
+        v.iniciar_tutorial()
+        assert (v.guion.datos.get("requiere") is not None) == con_cartas
+        v.close()

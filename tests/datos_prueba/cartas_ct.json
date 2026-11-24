@@ -1,0 +1,1215 @@
+{
+"nota": "Solo datos numéricos de juego de CT-D10 y CT-D11, para las pruebas del tutorial. Sin nombres, textos ni imágenes.",
+"cartas": [
+{
+"id": "D10001",
+"id_regla": "P070",
+"tipo": "companero",
+"colores": [
+"azul"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10001"
+}
+},
+{
+"id": "D10002",
+"id_regla": "P071",
+"tipo": "companero",
+"colores": [
+"azul"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10002"
+}
+},
+{
+"id": "D10003",
+"id_regla": "0838",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10003"
+}
+},
+{
+"id": "D10004",
+"id_regla": "0838",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10004"
+}
+},
+{
+"id": "D10005",
+"id_regla": "0839",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 6000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10005"
+}
+},
+{
+"id": "D10006",
+"id_regla": "0839",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 6000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10006"
+}
+},
+{
+"id": "D10007",
+"id_regla": "0003",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 7,
+"ap": 6000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10007"
+}
+},
+{
+"id": "D10008",
+"id_regla": "0003",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 7,
+"ap": 6000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10008"
+}
+},
+{
+"id": "D10009",
+"id_regla": "0840",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 7000,
+"lp": 2,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_personaje": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10009"
+}
+},
+{
+"id": "D10010",
+"id_regla": "0840",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 8,
+"ap": 7000,
+"lp": 2,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_personaje": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10010"
+}
+},
+{
+"id": "D10011",
+"id_regla": "0841",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 7,
+"ap": 5000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 3000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10011"
+}
+},
+{
+"id": "D10012",
+"id_regla": "0410",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 4,
+"ap": 4000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10012"
+}
+},
+{
+"id": "D10013",
+"id_regla": "0516",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 1000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10013"
+}
+},
+{
+"id": "D10014",
+"id_regla": "0516",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 1000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10014"
+}
+},
+{
+"id": "D10015",
+"id_regla": "0094",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 5,
+"ap": 5000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10015"
+}
+},
+{
+"id": "D10016",
+"id_regla": "0411",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10016"
+}
+},
+{
+"id": "D10017",
+"id_regla": "0411",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10017"
+}
+},
+{
+"id": "D10018",
+"id_regla": "0015",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10018"
+}
+},
+{
+"id": "D10019",
+"id_regla": "0015",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10019"
+}
+},
+{
+"id": "D10020",
+"id_regla": "0263",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 6,
+"ap": 5000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10020"
+}
+},
+{
+"id": "D10021",
+"id_regla": "0263",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 6,
+"ap": 5000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10021"
+}
+},
+{
+"id": "D10022",
+"id_regla": "0515",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 5,
+"ap": 5000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10022"
+}
+},
+{
+"id": "D10023",
+"id_regla": "0176",
+"tipo": "personaje",
+"colores": [
+"azul"
+],
+"nivel": 6,
+"ap": 6000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10023"
+}
+},
+{
+"id": "D10024",
+"id_regla": "0019",
+"tipo": "evento",
+"colores": [
+"azul"
+],
+"nivel": 2,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10024"
+}
+},
+{
+"id": "D10025",
+"id_regla": "0103",
+"tipo": "evento",
+"colores": [
+"azul"
+],
+"nivel": 5,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10025"
+}
+},
+{
+"id": "D10026",
+"id_regla": "0842",
+"tipo": "caso",
+"colores": [
+"azul"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+7,
+6
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D10",
+"nombre": {
+"es": "D10026"
+}
+},
+{
+"id": "D11001",
+"id_regla": "P076",
+"tipo": "companero",
+"colores": [
+"amarillo"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11001"
+}
+},
+{
+"id": "D11002",
+"id_regla": "P077",
+"tipo": "companero",
+"colores": [
+"amarillo"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11002"
+}
+},
+{
+"id": "D11003",
+"id_regla": "0936",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11003"
+}
+},
+{
+"id": "D11004",
+"id_regla": "0936",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11004"
+}
+},
+{
+"id": "D11005",
+"id_regla": "0937",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11005"
+}
+},
+{
+"id": "D11006",
+"id_regla": "0937",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 8,
+"ap": 8000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11006"
+}
+},
+{
+"id": "D11007",
+"id_regla": "0938",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 6,
+"ap": 5000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11007"
+}
+},
+{
+"id": "D11008",
+"id_regla": "0938",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 6,
+"ap": 5000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11008"
+}
+},
+{
+"id": "D11009",
+"id_regla": "0939",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 7,
+"ap": 6000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_personaje": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11009"
+}
+},
+{
+"id": "D11010",
+"id_regla": "0939",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 7,
+"ap": 6000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_personaje": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11010"
+}
+},
+{
+"id": "D11011",
+"id_regla": "0461",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 5,
+"ap": 5000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"rapidez": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11011"
+}
+},
+{
+"id": "D11012",
+"id_regla": "0466",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 4,
+"ap": 4000,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": true,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11012"
+}
+},
+{
+"id": "D11013",
+"id_regla": "0940",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 1000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11013"
+}
+},
+{
+"id": "D11014",
+"id_regla": "0941",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 7,
+"ap": 6000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11014"
+}
+},
+{
+"id": "D11015",
+"id_regla": "0942",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 5,
+"ap": 5000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_personaje": true,
+"asalto_caso": true
+},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11015"
+}
+},
+{
+"id": "D11016",
+"id_regla": "0710",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 3,
+"ap": 3000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11016"
+}
+},
+{
+"id": "D11017",
+"id_regla": "0943",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11017"
+}
+},
+{
+"id": "D11018",
+"id_regla": "0343",
+"tipo": "personaje",
+"colores": [
+"amarillo"
+],
+"nivel": 2,
+"ap": 1000,
+"lp": 1,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": 2000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11018"
+}
+},
+{
+"id": "D11019",
+"id_regla": "0944",
+"tipo": "evento",
+"colores": [
+"amarillo"
+],
+"nivel": 4,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {
+"asalto_caso": true
+},
+"irrupcion_ap": 1000,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11019"
+}
+},
+{
+"id": "D11020",
+"id_regla": "0945",
+"tipo": "evento",
+"colores": [
+"amarillo"
+],
+"nivel": 8,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+0,
+0
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11020"
+}
+},
+{
+"id": "D11021",
+"id_regla": "0946",
+"tipo": "caso",
+"colores": [
+"amarillo"
+],
+"nivel": 0,
+"ap": 0,
+"lp": 0,
+"nivel_caso": [
+7,
+6
+],
+"palabras_clave": {},
+"irrupcion_ap": null,
+"disfraz": false,
+"inspiracion": false,
+"mr": false,
+"limite": 3,
+"paquete": "CT-D11",
+"nombre": {
+"es": "D11021"
+}
+}
+]
+}
