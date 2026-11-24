@@ -1,7 +1,7 @@
 """Texto traducido superpuesto sobre la imagen de la carta, solo al mostrarla.
 
 La imagen descargada no se modifica ni se guarda retocada: se dibuja una copia en memoria
-con un velo difuminado sobre la zona de texto original y, encima, el texto de la
+con el fondo difuminado y un velo claro sobre la zona de texto original y, encima, el texto de la
 carta en el idioma elegido (sale de los datos de la carta, no del texto impreso).
 
 Las zonas son plantillas por tipo de carta, en fracciones del tamaño de la imagen, para
@@ -47,7 +47,10 @@ def _lineas_japonesas(texto: str, cap: int) -> int:
 
 # colores de las etiquetas, como los iconos impresos
 AZUL, CIAN, OSCURO = QColor("#2a64d6"), QColor("#13a3c7"), QColor("#2b2f36")
-VELO = QColor(250, 251, 255, 242)
+# velo claro sobre el fondo difuminado: 25 % en la caja de texto, 10 % en el nombre
+VELO = QColor(250, 251, 255, 64)
+VELO_NOMBRE = 26
+DIFUMINADO = 30   # cuanto mayor, más borroso queda el texto japonés de debajo
 
 
 def color_etiqueta(t: str) -> tuple[QColor, bool]:
@@ -91,7 +94,7 @@ def _mascara(w: int, h: int, lado: float, arriba: float, abajo: float) -> QImage
     return m
 
 
-def _capa(img: QImage, r: QRectF, velo: QColor, lado=0.0, arriba=0.0, abajo=0.0, factor=14) -> QImage:
+def _capa(img: QImage, r: QRectF, velo: QColor, lado=0.0, arriba=0.0, abajo=0.0, factor=DIFUMINADO) -> QImage:
     """Fondo difuminado de la propia carta + velo de color, desvanecido por los bordes."""
     r = r.intersected(QRectF(img.rect()))
     capa = QImage(r.size().toSize(), QImage.Format_ARGB32_Premultiplied)
@@ -188,8 +191,13 @@ def _pintar_texto(p: QPainter, lineas, alto_l, fuentes, x0: float, y0: float):
             else:
                 _, t, w, b = item
                 p.setFont(fb if b else f)
+                r = QRectF(x0 + x, y, w + 4, alto_l)
+                p.setPen(QColor(255, 255, 255, 150))
+                d = max(1.0, alto_l * 0.05)
+                for dx, dy in ((-d, 0), (d, 0), (0, -d), (0, d), (-d, -d), (d, d), (-d, d), (d, -d)):
+                    p.drawText(r.translated(dx, dy), Qt.AlignVCenter | Qt.AlignLeft, t)
                 p.setPen(QColor("#15171c"))
-                p.drawText(QRectF(x0 + x, y, w + 4, alto_l), Qt.AlignVCenter | Qt.AlignLeft, t)
+                p.drawText(r, Qt.AlignVCenter | Qt.AlignLeft, t)
 
 
 def _texto_ajustado(p: QPainter, r: QRectF, texto: str, color: QColor, negrita=True, px_max=None):
@@ -254,10 +262,12 @@ def componer(original: QPixmap, defn, idioma: str) -> QPixmap | None:
             tira = QRectF(caja.right() - 0.02 * W, caja.top(), ex1 * W - caja.right() + 0.02 * W,
                           eabajo * H - caja.top())
             p.drawImage(tira.topLeft(), _capa(img, tira, VELO, arriba=fundido))
-        p.drawImage(caja.topLeft(), _capa(img, caja, VELO, arriba=fundido))
+        pl = 0.03 * W
+        caja = caja.adjusted(-pl, 0, pl, 0.03 * H)
+        p.drawImage(caja.topLeft(), _capa(img, caja, VELO, lado=pl, arriba=fundido, abajo=0.03 * H))
         _pintar_texto(p, lineas, alto_l, fuentes, x0 + mx, abajo - alto + my)
 
-    # --- nombre: nube del color del marco, difuminada por los cuatro lados
+    # --- nombre: fondo difuminado con velo muy suave, ajustado al nombre
     ja_nombre = defn.nombre.get("ja", "")
     if nombre and ja_nombre and nombre != ja_nombre and not ja_nombre.isascii():
         a, b, c, d = NOMBRE[tipo]
@@ -271,21 +281,20 @@ def componer(original: QPixmap, defn, idioma: str) -> QPixmap | None:
                 break
             px *= 0.93
         pluma = 0.036 * W
-        # cubre toda la zona del nombre original (el japonés suele ser más largo que la traducción)
-        ancho_n = max(QFontMetricsF(fn).horizontalAdvance(nombre) + 2 * pluma + 0.02 * W,
-                      zona.width() + 1.6 * pluma)
-        # se alarga hacia abajo: las letras japonesas bajan más que la zona del nombre
-        nube = QRectF(zona.left() - pluma * 0.6, zona.top() - 0.008 * H,
-                      min(ancho_n, W - zona.left() + pluma * 0.6), zona.height() + 0.052 * H)
-        velo = QColor(marco)
-        velo.setAlpha(238)
-        p.drawImage(nube.topLeft(), _capa(img, nube, velo, lado=pluma, arriba=0.016 * H, abajo=0.022 * H))
+        # caja ajustada al nombre traducido, velo muy suave
+        # nunca más estrecha que el nombre japonés que tapa (cada carácter japonés ≈ 1 em)
+        ancho_txt = max(QFontMetricsF(fn).horizontalAdvance(nombre), len(ja_nombre) * zona.height() * 0.62)
+        nube = QRectF(zona.left() - pluma * 0.5, zona.top() - 0.004 * H, ancho_txt + 2 * pluma, zona.height() + 0.03 * H)
+        velo_nombre = QColor(VELO)
+        velo_nombre.setAlpha(VELO_NOMBRE)
+        p.drawImage(nube.topLeft(), _capa(img, nube, velo_nombre, lado=pluma, arriba=0.014 * H, abajo=0.018 * H))
         p.setFont(fn)
         texto_r = QRectF(nube.left() + pluma, zona.top(), nube.width() - pluma, zona.height())
-        sombra = max(1.0, px * 0.05)
-        p.setPen(QColor(0, 0, 0, 110))
-        p.drawText(texto_r.translated(sombra, sombra), Qt.AlignVCenter | Qt.AlignLeft, nombre)
-        p.setPen(QColor("white"))
+        halo = max(1.0, px * 0.06)
+        p.setPen(QColor(255, 255, 255, 170))
+        for dx, dy in ((-halo, 0), (halo, 0), (0, -halo), (0, halo), (-halo, -halo), (halo, halo), (-halo, halo), (halo, -halo)):
+            p.drawText(texto_r.translated(dx, dy), Qt.AlignVCenter | Qt.AlignLeft, nombre)
+        p.setPen(QColor("#15171c"))
         p.drawText(texto_r, Qt.AlignVCenter | Qt.AlignLeft, nombre)
 
     # --- rasgos (cajitas de arriba a la derecha)

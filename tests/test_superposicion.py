@@ -31,11 +31,11 @@ def test_compone_sin_tocar_el_original(tipo, w, h):
     out = componer(orig, _carta(tipo), "es")
     assert out is not None and out.size() == orig.size()
     assert orig.toImage().pixelColor(w // 2, int(h * 0.85)).name() == "#000000"   # original intacto
-    # en la caja (zona baja) el velo claro tapa el fondo
+    # en la caja (zona baja) el velo aclara el fondo
     img = out.toImage()
     y = int(h * 0.80) if tipo != "caso" else int(h * 0.90)
-    blancos = sum(1 for x in range(int(w * 0.3), int(w * 0.7), 7) if img.pixelColor(x, y).lightness() > 220)
-    assert blancos > 0
+    aclarados = sum(1 for x in range(int(w * 0.3), int(w * 0.7), 7) if img.pixelColor(x, y).lightness() > 30)
+    assert aclarados > 0
 
 
 def test_sin_traduccion_no_compone():
@@ -54,3 +54,16 @@ def test_fundas_propias_y_del_usuario(tmp_path):
         pix = f.pixmap(nombre)
         assert (pix.width(), pix.height()) == (ANCHO, ALTO)
     assert f.pixmap("no existe").width() == ANCHO      # vuelve a la funda por defecto
+
+
+def test_texto_japones_queda_borroso():
+    """Un patrón nítido (como el texto impreso) pierde casi todo su contraste bajo la caja."""
+    img = QtGui.QImage(716, 1000, QtGui.QImage.Format_RGB32)
+    img.fill(QtGui.QColor("white"))
+    p = QtGui.QPainter(img)
+    for x in range(0, 716, 6):
+        p.fillRect(x, 760, 3, 100, QtGui.QColor("black"))
+    p.end()
+    out = componer(QtGui.QPixmap.fromImage(img), _carta(), "es").toImage()
+    fila = [out.pixelColor(x, 845).lightness() for x in range(200, 600)]
+    assert max(fila) - min(fila) < 120          # el original va de 0 a 255
