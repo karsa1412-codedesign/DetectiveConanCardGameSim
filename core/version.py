@@ -1,7 +1,7 @@
 """Versión de la app y origen de las actualizaciones.
 
-Para publicar una versión nueva: sube VERSION aquí, haz commit y crea la etiqueta
-v<VERSION> (por ejemplo v0.7.0). GitHub Actions compila el instalador y lo publica;
+Para publicar una versión nueva: sube VERSION aquí y sube el cambio a la rama main.
+GitHub Actions compila el instalador, crea la etiqueta v<VERSION> y lo publica;
 las apps instaladas lo detectan al arrancar.
 """
 VERSION = "0.7.0"

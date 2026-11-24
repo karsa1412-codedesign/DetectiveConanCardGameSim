@@ -100,9 +100,10 @@ Modo portátil: un archivo `portable.txt` junto al .exe hace que todo se guarde 
 
 1. Sube el número en `core/version.py` (por ejemplo `0.7.1`) y, si quieres, escribe las novedades
    en `notas/0.7.1.md`.
-2. Sube los cambios a GitHub y crea la etiqueta: `git tag v0.7.1` y `git push --tags`.
-3. GitHub Actions (`.github/workflows/publicar.yml`) pasa las pruebas, compila el .exe y el
-   instalador en Windows y publica la versión. Si las pruebas fallan, no publica nada.
+2. Sube los cambios a la rama `main` de GitHub.
+3. GitHub Actions (`.github/workflows/publicar.yml`) ve que esa versión no existe, pasa las
+   pruebas, compila el .exe y el instalador en Windows y publica la versión con su etiqueta.
+   Si las pruebas fallan, no publica nada. Un cambio sin subir la versión solo pasa las pruebas.
 4. Las apps instaladas la detectan al arrancar.
 
 El repositorio se indica en `REPO` de `core/version.py` («usuario/repositorio»). Para que las apps

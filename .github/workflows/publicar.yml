@@ -1,5 +1,7 @@
-# Compila y publica una versión nueva cuando se sube una etiqueta v* (por ejemplo v0.7.0).
-# 1. Comprueba que la etiqueta coincide con core/version.py
+# Compila y publica una versión nueva cada vez que llega a main un cambio con un número de
+# versión (core/version.py) que todavía no está publicado. También se puede lanzar a mano
+# desde la pestaña Actions («Run workflow»).
+# 1. Mira si la versión ya existe; si existe, solo pasa las pruebas
 # 2. Pasa las pruebas
 # 3. Genera el .exe (PyInstaller) y el instalador (Inno Setup)
 # 4. Crea la versión en GitHub con el instalador y su SHA-256
@@ -8,7 +10,7 @@ name: Publicar versión
 
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -24,15 +26,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Leer la versión
+      - name: Leer la versión y ver si ya está publicada
         id: version
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $v = python -c "from core.version import VERSION; print(VERSION)"
           echo "version=$v" >> $env:GITHUB_OUTPUT
-          if ("${{ github.ref_type }}" -eq "tag" -and "${{ github.ref_name }}" -ne "v$v") {
-            Write-Error "La etiqueta ${{ github.ref_name }} no coincide con core/version.py ($v)"; exit 1
+          gh release view "v$v" --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            echo "nueva=false" >> $env:GITHUB_OUTPUT
+            echo "La versión $v ya está publicada: solo se pasan las pruebas."
+          } else {
+            echo "nueva=true" >> $env:GITHUB_OUTPUT
+            echo "Versión nueva: $v"
           }
+          $global:LASTEXITCODE = 0
 
       - name: Instalar dependencias
         run: python -m pip install -r requirements.txt
@@ -43,12 +53,15 @@ jobs:
         run: python -m pytest tests -q
 
       - name: Compilar el programa
+        if: steps.version.outputs.nueva == 'true'
         run: python -m PyInstaller --noconfirm --clean SimuladorConan.spec
 
       - name: Instalar Inno Setup
+        if: steps.version.outputs.nueva == 'true'
         run: choco install innosetup -y --no-progress
 
       - name: Compilar el instalador
+        if: steps.version.outputs.nueva == 'true'
         shell: pwsh
         run: |
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DVersion=${{ steps.version.outputs.version }}" instalador\SimuladorConan.iss
@@ -56,7 +69,7 @@ jobs:
           (Get-FileHash $f -Algorithm SHA256).Hash.ToLower() | Out-File -Encoding ascii -NoNewline "$f.sha256"
 
       - name: Publicar en GitHub
-        if: github.ref_type == 'tag'
+        if: steps.version.outputs.nueva == 'true'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -64,14 +77,7 @@ jobs:
           $v = "${{ steps.version.outputs.version }}"
           $notas = if (Test-Path "notas\$v.md") { "notas\$v.md" } else { $null }
           if ($notas) {
-            gh release create "v$v" "salida\SimuladorConan-Setup-$v.exe" "salida\SimuladorConan-Setup-$v.exe.sha256" --title "Versión $v" --notes-file $notas
+            gh release create "v$v" "salida\SimuladorConan-Setup-$v.exe" "salida\SimuladorConan-Setup-$v.exe.sha256" --target "${{ github.sha }}" --title "Versión $v" --notes-file $notas
           } else {
-            gh release create "v$v" "salida\SimuladorConan-Setup-$v.exe" "salida\SimuladorConan-Setup-$v.exe.sha256" --title "Versión $v" --generate-notes
+            gh release create "v$v" "salida\SimuladorConan-Setup-$v.exe" "salida\SimuladorConan-Setup-$v.exe.sha256" --target "${{ github.sha }}" --title "Versión $v" --generate-notes
           }
-
-      - name: Guardar el instalador (ejecución manual)
-        if: github.ref_type != 'tag'
-        uses: actions/upload-artifact@v4
-        with:
-          name: instalador
-          path: salida/*
