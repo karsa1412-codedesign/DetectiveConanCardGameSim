@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (QDialog, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QListWidget,
                                QListWidgetItem, QMessageBox, QPushButton, QTableWidget, QTableWidgetItem,
                                QVBoxLayout, QWidget)
@@ -52,6 +53,13 @@ class PaginaPerfiles(QWidget):
         caja = QFrame()
         caja.setFixedWidth(460)
         lc = QVBoxLayout(caja)
+        logo = QPixmap(str(ventana.base / "recursos" / "logo.png"))
+        if not logo.isNull():
+            lbl_logo = QLabel()
+            lbl_logo.setPixmap(logo.scaled(132, 132, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            lbl_logo.setAlignment(Qt.AlignCenter)
+            lbl_logo.setStyleSheet("background:transparent;")
+            lc.addWidget(lbl_logo)
         self.titulo = QLabel()
         self.titulo.setStyleSheet("font-size:26px;font-weight:bold;color:#d9a845;")
         lc.addWidget(self.titulo)

@@ -40,8 +40,19 @@ def main():
         return
     from PySide6.QtWidgets import QApplication
     from gui.ventana import Ventana
+    if sys.platform == "win32":
+        try:   # para que la barra de tareas muestre el logo de la app y no el de Python
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("SimuladorConan.FanSim")
+        except Exception:
+            pass
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    from PySide6.QtGui import QIcon
+    from core.rutas import carpeta_programa
+    logo = carpeta_programa() / "recursos" / "logo.png"
+    if logo.exists():
+        app.setWindowIcon(QIcon(str(logo)))
     from gui.tema import QSS
     app.setStyleSheet(QSS)
     from core.rutas import rutas
