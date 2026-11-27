@@ -89,6 +89,54 @@ class GestorPerfiles:
                 w.writerow(["fecha", "perfil", "evento", "detalle"])
             w.writerow([ahora(), nombre, evento, detalle])
 
+    # ---------------------------------------------------------------- estadísticas por mazo
+
+    def mazos(self, nombre: str) -> dict:
+        """{mazo: {partidas, victorias, derrotas, companeros: {id: n}, ultima}} del perfil.
+        La primera vez se reconstruye con el registro de partidas que ya existía."""
+        p = self.perfiles[nombre]
+        if "mazos" not in p:
+            p["mazos"] = self._mazos_desde_registro(nombre)
+            self.guardar()
+        return p["mazos"]
+
+    def _mazos_desde_registro(self, nombre: str) -> dict:
+        out: dict = {}
+        actual = None
+        for r in self.leer_registro(nombre):
+            ev, det = r["evento"], r.get("detalle") or ""
+            if ev in ("partida_inicio", "partida_ia_inicio") and " contra " in det:
+                actual = det.split(" contra ")[0].strip()
+                e = out.setdefault(actual, {"partidas": 0, "victorias": 0, "derrotas": 0, "companeros": {},
+                                            "ultima": ""})
+                e["partidas"] += 1
+                e["ultima"] = r["fecha"]
+            elif ev == "partida_ia_fin" and actual in out:
+                out[actual]["victorias" if det.startswith("gana") else "derrotas"] += 1
+                actual = None
+        return out
+
+    def uso_mazo(self, nombre: str, mazo: str, companero: str):
+        e = self.mazos(nombre).setdefault(mazo, {"partidas": 0, "victorias": 0, "derrotas": 0,
+                                                 "companeros": {}, "ultima": ""})
+        e["partidas"] += 1
+        e["companeros"][companero] = e["companeros"].get(companero, 0) + 1
+        e["ultima"] = ahora()
+        self.guardar()
+
+    def resultado_mazo(self, nombre: str, mazo: str, gano: bool):
+        e = self.mazos(nombre).get(mazo)
+        if e is not None:
+            e["victorias" if gano else "derrotas"] += 1
+            self.guardar()
+
+    def mazo_favorito(self, nombre: str) -> tuple[str, dict] | None:
+        mz = self.mazos(nombre)
+        if not mz:
+            return None
+        k = max(mz, key=lambda m: (mz[m]["partidas"], mz[m].get("ultima", "")))
+        return k, mz[k]
+
     def leer_registro(self, nombre: str | None = None) -> list[dict]:
         if not self.ruta_log.exists():
             return []

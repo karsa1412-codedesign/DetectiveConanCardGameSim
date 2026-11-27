@@ -30,7 +30,8 @@ from .traducciones import PaginaTraducciones
 from .intro import Intro
 from .actualizaciones import Actualizaciones
 from .mazos import PaginaMazos
-from .pantallas import PaginaMenu, PaginaPerfiles
+from .pantallas import PaginaPerfiles
+from .menu_principal import PaginaMenu
 from .textos import Textos, describir, describir_efecto, linea_hab
 
 RESALTE = "border:3px solid #ff7a00;"
@@ -881,6 +882,8 @@ class Ventana(QMainWindow):
         self.ultimo_decisor = None
         self.perfiles.registrar(self.perfil, "partida_inicio", f"{m0.nombre} contra {m1.nombre}")
         self.perfiles.sumar(self.perfil, "partidas_iniciadas")
+        self.perfiles.uso_mazo(self.perfil, m0.nombre, m0.companero)
+        self.mazo_en_juego = m0.nombre
         self.pila.setCurrentWidget(self.tablero)
         self._menus()
         self.refrescar()
@@ -911,6 +914,8 @@ class Ventana(QMainWindow):
         self.perfiles.registrar(self.perfil, "partida_ia_inicio",
                                 f"{m0.nombre} contra {m1.nombre} (IA {op['nivel']}, {op['estilo']})")
         self.perfiles.sumar(self.perfil, "partidas_iniciadas")
+        self.perfiles.uso_mazo(self.perfil, m0.nombre, m0.companero)
+        self.mazo_en_juego = m0.nombre
         self.pila.setCurrentWidget(self.tablero)
         self._menus()
         self.refrescar()
@@ -1032,6 +1037,7 @@ class Ventana(QMainWindow):
                                         f"{'gana' if p.ganador == 0 else 'pierde'} contra la IA "
                                         f"({self.ia.nivel}) en el turno {p.turno} · {p.motivo}")
                 self.perfiles.sumar(self.perfil, "ia_victorias" if p.ganador == 0 else "ia_derrotas")
+                self.perfiles.resultado_mazo(self.perfil, getattr(self, "mazo_en_juego", ""), p.ganador == 0)
             else:
                 self.perfiles.registrar(self.perfil, "partida_fin",
                                         f"gana el jugador {p.ganador + 1} en el turno {p.turno} · {p.motivo}")

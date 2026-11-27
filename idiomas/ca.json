@@ -355,5 +355,17 @@
  "ia_gana": "Guanya la IA. {motivo}",
  "ia_rendirse": "Segur que et vols rendir? La IA guanyarà la partida.",
  "ia_turno_tuyo": "Torn {t} · jugues tu",
- "ia_turno_suyo": "Torn {t} · juga la IA"
+ "ia_turno_suyo": "Torn {t} · juga la IA",
+ "menu_b_tutorial": "Tutorial",
+ "menu_b_local": "En local",
+ "menu_b_ia": "Contra la IA",
+ "menu_b_online": "VS Online",
+ "menu_b_tapetes": "Tapets",
+ "menu_personalizaciones": "Personalitzacions",
+ "menu_mazo_usado": "El teu mall més utilitzat",
+ "menu_mazo_vacio": "Aquí veuràs el mall amb què jugues més. Comença una partida per estrenar-lo.",
+ "menu_mazo_partidas": "Partides: {n}",
+ "menu_mazo_ia": "Contra la IA: {g} guanyades · {p} perdudes",
+ "menu_mazo_companero": "Company: {nombre}",
+ "menu_mazo_ultima": "Última partida: {fecha}"
 }

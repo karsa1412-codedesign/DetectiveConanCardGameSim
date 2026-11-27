@@ -355,5 +355,17 @@
  "ia_gana": "Gana la IA. {motivo}",
  "ia_rendirse": "¿Seguro que quieres rendirte? La IA ganará la partida.",
  "ia_turno_tuyo": "Turno {t} · juegas tú",
- "ia_turno_suyo": "Turno {t} · juega la IA"
+ "ia_turno_suyo": "Turno {t} · juega la IA",
+ "menu_b_tutorial": "Tutorial",
+ "menu_b_local": "En local",
+ "menu_b_ia": "Contra la IA",
+ "menu_b_online": "VS Online",
+ "menu_b_tapetes": "Tapetes",
+ "menu_personalizaciones": "Personalizaciones",
+ "menu_mazo_usado": "Tu mazo más usado",
+ "menu_mazo_vacio": "Aquí verás el mazo con el que más juegas. Empieza una partida para estrenarlo.",
+ "menu_mazo_partidas": "Partidas: {n}",
+ "menu_mazo_ia": "Contra la IA: {g} ganadas · {p} perdidas",
+ "menu_mazo_companero": "Compañero: {nombre}",
+ "menu_mazo_ultima": "Última partida: {fecha}"
 }
