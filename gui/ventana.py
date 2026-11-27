@@ -5,7 +5,9 @@ import configparser
 import os
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt, QTimer
+import time
+
+from PySide6.QtCore import QSize, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QColor, QPixmap, QTransform
 from PySide6.QtWidgets import (QApplication, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFormLayout,
                                QFrame, QGroupBox, QHBoxLayout, QLabel, QMainWindow, QMenu, QMessageBox,
@@ -18,6 +20,7 @@ from core.estado import ACTIVO, ATURDIDO, DORMIDO
 from core.reglas import Motor, ReglaError, nueva_partida
 from core.perfiles import GestorPerfiles
 from core.tutorial import Guion, GuionError
+from core.ia import IA, copiar
 from datos.descarga import CatalogoLocal
 from . import tema
 from .contenido import PaginaContenido
@@ -326,9 +329,10 @@ class DialogoFundas(QDialog):
 class DialogoMazos(QDialog):
     """Elegir el mazo de cada jugador (solo mazos válidos) y, si el mazo trae varios, el Compañero."""
 
-    def __init__(self, ventana: "Ventana"):
+    def __init__(self, ventana: "Ventana", ia: bool = False):
         super().__init__(ventana)
         self.v = ventana
+        self.ia = ia
         tx = ventana.tx
         self.setWindowTitle(tx("elige_mazos"))
         self.validos = [(r, m) for r, m, err in ventana.mazos_disponibles() if not err]
@@ -351,17 +355,53 @@ class DialogoMazos(QDialog):
             preferida = ventana.funda_perfil() if n == 1 else ("Granate" if ventana.funda_perfil() != "Granate" else "Noche")
             funda.setCurrentIndex(max(0, funda.findData(preferida)))
             funda.setIconSize(QSize(26, 36))
-            form.addRow(tx("mazo_jugador", n=n), cb)
+            form.addRow(tx("mazo_jugador", n=n) if not ia else tx("ia_tu_mazo" if n == 1 else "ia_su_mazo"), cb)
             form.addRow(tx("elegir_companero"), comp)
             form.addRow(tx("funda"), funda)
             self.combos.append(cb)
             self.comps.append(comp)
             self.fundas_cb.append(funda)
             self._comps(cb, comp)
+        if ia:
+            g = ventana.cfg.g
+            self.nivel = QComboBox()
+            for k in ("facil", "normal", "dificil"):
+                self.nivel.addItem(tx("ia_nivel_" + k), k)
+            self.nivel.setCurrentIndex(max(0, self.nivel.findData(g.get("ia_nivel", "normal"))))
+            self.estilo = QComboBox()
+            for k in ("equilibrado", "agresivo", "prudente"):
+                self.estilo.addItem(tx("ia_estilo_" + k), k)
+            self.estilo.setCurrentIndex(max(0, self.estilo.findData(g.get("ia_estilo", "equilibrado"))))
+            self.primero = QComboBox()
+            for k in ("azar", "yo", "ia"):
+                self.primero.addItem(tx("ia_empieza_" + k), k)
+            self.primero.setCurrentIndex(max(0, self.primero.findData(g.get("ia_primero", "azar"))))
+            form.addRow(tx("ia_nivel"), self.nivel)
+            form.addRow(tx("ia_estilo"), self.estilo)
+            form.addRow(tx("ia_empieza"), self.primero)
+            ayuda = QLabel(tx("ia_ayuda"))
+            ayuda.setWordWrap(True)
+            ayuda.setStyleSheet("color:#a9b1c2;font-size:11px;")
+            form.addRow(ayuda)
+            for n, cb in enumerate(self.combos):
+                guardado = g.get(f"ia_mazo{n}")
+                i = cb.findText(guardado) if guardado else -1
+                if i >= 0:
+                    cb.setCurrentIndex(i)
         bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         bb.accepted.connect(self.accept)
         bb.rejected.connect(self.reject)
         form.addRow(bb)
+
+    def opciones_ia(self) -> dict:
+        op = {"nivel": self.nivel.currentData(), "estilo": self.estilo.currentData(),
+              "primero": self.primero.currentData()}
+        for k, v in op.items():
+            self.v.cfg.g["ia_" + k] = v
+        for n, cb in enumerate(self.combos):
+            self.v.cfg.g[f"ia_mazo{n}"] = cb.currentText()
+        self.v.cfg.guardar()
+        return op
 
     def _comps(self, cb, comp):
         comp.clear()
@@ -437,6 +477,23 @@ class DialogoElegir(QDialog):
         self.caja.button(QDialogButtonBox.Ok).setEnabled(self.minimo <= n <= self.maximo)
 
 
+class Pensador(QThread):
+    """La IA piensa en segundo plano, sobre una copia de la partida, sin bloquear la ventana."""
+    listo = Signal(object, int)
+
+    def __init__(self, ia: IA, motor: Motor, gen: int):
+        super().__init__()
+        self.ia, self.motor, self.gen = ia, motor, gen
+
+    def run(self):
+        try:
+            accion = self.ia.pensar(self.motor).accion
+        except Exception:      # no debería pasar: si falla, juega con reglas sencillas
+            from core.ia import por_reglas
+            accion = por_reglas(self.motor, self.ia.yo, self.ia.rng)
+        self.listo.emit(accion, self.gen)
+
+
 class PilaConFondo(QStackedWidget):
     """Contenedor de las pantallas con la pared de ladrillo azulada de fondo."""
 
@@ -483,7 +540,12 @@ class Ventana(QMainWindow):
         self.eleccion_de = None
         self.eleccion_abierta = False
         self.guion: Guion | None = None
-        self.modo = None            # "local" | "tutorial"
+        self.modo = None            # "local" | "tutorial" | "ia"
+        self.ia: IA | None = None
+        self.ia_gen = 0             # cambia al empezar o dejar una partida: descarta lo que pensaba
+        self.pensador: Pensador | None = None
+        self._hilos: set = set()
+        self.ia_ultima = ""
         self.fin_registrado = False
         self.ultimo_decisor = None
         self._zonas: dict[str, list] = {}
@@ -546,6 +608,7 @@ class Ventana(QMainWindow):
 
     def ir_a_menu(self):
         self.motor = self.guion = self.modo = None
+        self.ia_gen += 1
         self.mesa.vaciar()
         self.registro.clear()
         self.pag_menu.refrescar()
@@ -660,6 +723,9 @@ class Ventana(QMainWindow):
         self.ir_a_menu()
 
     def closeEvent(self, ev):
+        self.ia_gen += 1
+        for h in list(self._hilos):
+            h.wait(10000)
         if self.perfil:
             if self.modo and self.motor and self.motor.p.ganador is None:
                 self.perfiles.registrar(self.perfil, "tutorial_abandonado" if self.modo == "tutorial"
@@ -677,7 +743,7 @@ class Ventana(QMainWindow):
         en_tablero = self.pila.currentWidget() in (self.tablero, self.tapa)
         if en_tablero:
             m.addAction(tx("volver_menu"), self.volver_al_menu)
-            if self.modo == "local":
+            if self.modo in ("local", "ia"):
                 m.addAction(tx("rendirse"), self.rendirse)
         m.addAction(tx("carpeta_imagenes"), self.elegir_imagenes)
         self.chk_ocultar = QAction(tx("ocultar_manos"), self, checkable=True)
@@ -819,6 +885,75 @@ class Ventana(QMainWindow):
         self._menus()
         self.refrescar()
 
+    def iniciar_ia(self):
+        dlg = DialogoMazos(self, ia=True)
+        if not dlg.hay_mazos:
+            QMessageBox.information(self, self.tx("titulo"), self.tx("local_sin_mazos"))
+            return
+        if dlg.exec() != QDialog.Accepted:
+            return
+        m0, m1 = dlg.mazos()
+        op = dlg.opciones_ia()
+        primero = {"yo": 0, "ia": 1}.get(op["primero"])
+        self.mesa.fundas = dict(enumerate(dlg.fundas_elegidas()))
+        try:
+            self.motor = nueva_partida(self.catalogo, m0, m1, primero=primero)
+        except ReglaError as e:
+            QMessageBox.warning(self, self.tx("titulo"), str(e))
+            return
+        self.ia_gen += 1
+        self.ia = IA(1, op["nivel"], op["estilo"], tiempo=1.5)
+        self.ia_ultima = ""
+        self.mesa.vaciar()
+        self.modo, self.guion = "ia", None
+        self.fin_registrado = False
+        self.ultimo_decisor = None
+        self.perfiles.registrar(self.perfil, "partida_ia_inicio",
+                                f"{m0.nombre} contra {m1.nombre} (IA {op['nivel']}, {op['estilo']})")
+        self.perfiles.sumar(self.perfil, "partidas_iniciadas")
+        self.pila.setCurrentWidget(self.tablero)
+        self._menus()
+        self.refrescar()
+
+    def _turno_ia(self):
+        """Si le toca a la IA, la pone a pensar (una sola vez por decisión)."""
+        m = self.motor
+        if self.modo != "ia" or m is None or self.ia is None or not self.ia.le_toca(m):
+            return
+        self.ia_inicio = time.monotonic()
+        if self.pensador is not None and self.pensador.gen == self.ia_gen:
+            return    # ya está pensando esta decisión (o acaba de terminar y la jugará en breve)
+        hilo = Pensador(self.ia, copiar(m), self.ia_gen)
+        hilo.listo.connect(self._ia_decidio)
+        hilo.finished.connect(lambda h=hilo: self._hilos.discard(h))
+        self._hilos.add(hilo)      # referencia viva hasta que termine (si no, Qt lo destruiría)
+        self.pensador = hilo
+        hilo.start()
+
+    def _ia_decidio(self, accion, gen):
+        if gen != self.ia_gen or self.modo != "ia" or self.motor is None:
+            self.pensador = None
+            return
+        # pausa mínima para que se vea lo que hace, como si fuera una persona
+        espera = max(0, 0.75 - (time.monotonic() - self.ia_inicio))
+        QTimer.singleShot(int(espera * 1000), lambda: self._ia_jugar(accion, gen))
+
+    def _ia_jugar(self, accion, gen):
+        if gen != self.ia_gen or self.modo != "ia" or self.motor is None or not self.ia.le_toca(self.motor):
+            self.pensador = None
+            return
+        texto = describir(self.tx, self.motor, accion)
+        try:
+            self.motor.aplicar(accion)
+        except ReglaError:
+            from core.ia import por_reglas
+            accion = por_reglas(self.motor, 1, self.ia.rng)
+            texto = describir(self.tx, self.motor, accion)
+            self.motor.aplicar(accion)
+        self.ia_ultima = texto
+        self.pensador = None
+        self.refrescar()
+
     def iniciar_tutorial(self):
         try:
             from core.tutorial import disponible
@@ -883,26 +1018,38 @@ class Ventana(QMainWindow):
         p = m.p
         tut = self.modo == "tutorial"
         decide = p.quien_decide()
-        ocultar = self.chk_ocultar.isChecked() and not tut
+        ia = self.modo == "ia"
+        ocultar = self.chk_ocultar.isChecked() and not tut and not ia
         if ocultar and p.ganador is None and self.ultimo_decisor is not None and decide != self.ultimo_decisor:
             self.lbl_tapa.setText(tx("pasar_dispositivo", n=decide + 1))
             self.btn_tapa.setText(tx("listo"))
             self.pila.setCurrentWidget(self.tapa)
         self.ultimo_decisor = decide
-        if self.modo == "local" and p.ganador is not None and not self.fin_registrado:
+        if self.modo in ("local", "ia") and p.ganador is not None and not self.fin_registrado:
             self.fin_registrado = True
-            self.perfiles.registrar(self.perfil, "partida_fin",
-                                    f"gana el jugador {p.ganador + 1} en el turno {p.turno} · {p.motivo}")
+            if ia:
+                self.perfiles.registrar(self.perfil, "partida_ia_fin",
+                                        f"{'gana' if p.ganador == 0 else 'pierde'} contra la IA "
+                                        f"({self.ia.nivel}) en el turno {p.turno} · {p.motivo}")
+                self.perfiles.sumar(self.perfil, "ia_victorias" if p.ganador == 0 else "ia_derrotas")
+            else:
+                self.perfiles.registrar(self.perfil, "partida_fin",
+                                        f"gana el jugador {p.ganador + 1} en el turno {p.turno} · {p.motivo}")
             self.perfiles.sumar(self.perfil, "partidas_terminadas")
         ver = {}
         for idx in (0, 1):
-            if tut:
+            if tut or ia:
                 ver[idx] = idx == 0 or p.ganador is not None
             else:
                 ver[idx] = (not ocultar) or idx == decide or p.ganador is not None
         self.mesa.actualizar(m, ver)
         self.mesa.actualizar_arrastrables()
-        if p.ganador is not None:
+        if p.ganador is not None and ia:
+            self.lbl_estado.setText(tx("ia_ganas" if p.ganador == 0 else "ia_gana", motivo=p.motivo))
+        elif ia and p.turno > 0:
+            quien = tx("ia_turno_tuyo" if p.activo == 0 else "ia_turno_suyo", t=p.turno)
+            self.lbl_estado.setText(quien + ("   ·   " + tx("ia_piensa") if decide == 1 else ""))
+        elif p.ganador is not None:
             self.lbl_estado.setText(tx("ganador", n=p.ganador + 1, motivo=p.motivo))
         elif p.turno == 0:
             self.lbl_estado.setText(tx("decide", n=decide + 1))
@@ -916,6 +1063,7 @@ class Ventana(QMainWindow):
         self._dibujar_eleccion()
         self.registro.setPlainText("\n".join(p.log))
         self.registro.verticalScrollBar().setValue(self.registro.verticalScrollBar().maximum())
+        self._turno_ia()
 
     def _dibujar_acciones(self):
         m, tx = self.motor, self.tx
@@ -928,10 +1076,19 @@ class Ventana(QMainWindow):
         tut = self.modo == "tutorial"
         esperadas = self.guion.esperadas() if tut else None
         legales = m.legales()
-        if tut and m.p.quien_decide() != 0:
-            legales = []   # en el tutorial, las decisiones del rival las aplica el guion
+        ia = self.modo == "ia"
+        if (tut or ia) and m.p.quien_decide() != 0:
+            legales = []   # las decisiones del rival las aplica el guion o la IA
+        if ia and m.p.ganador is None:
+            caja = QLabel((tx("ia_ultima", accion=self.ia_ultima) + "\n") if self.ia_ultima else "")
+            caja.setWordWrap(True)
+            caja.setStyleSheet("color:#ffcf6e;font-size:12px;")
+            if m.p.quien_decide() == 1:
+                caja.setText(caja.text() + tx("ia_piensa"))
+            if caja.text():
+                self.zona_botones.addWidget(caja)
         pend = m.p.pendiente
-        if pend is not None and pend.tipo == "efecto" and m.p.ganador is None:
+        if pend is not None and pend.tipo == "efecto" and m.p.ganador is None and not (ia and pend.jugador != 0):
             self._panel_efecto(pend, esperadas)
             legales = []
         for a in legales:
@@ -957,7 +1114,7 @@ class Ventana(QMainWindow):
             rendir.setStyleSheet("QPushButton{color:#ffb3a6;border-color:#c0533f;text-align:left;padding:5px;}")
             rendir.clicked.connect(self.rendirse)
             self.zona_botones.addWidget(rendir)
-        if m.p.ganador is None and not tut:
+        if m.p.ganador is None and not tut and not (ia and m.p.quien_decide() != 0):
             decide = m.p.quien_decide()
             herr = QToolButton(text=tx("manual"))
             herr.setPopupMode(QToolButton.InstantPopup)
@@ -1080,7 +1237,7 @@ class Ventana(QMainWindow):
         m = self.motor
         pend = m.p.pendiente if m else None
         if pend is None or pend.tipo != "efecto" or pend.datos["modo"] != "elegir" or \
-                (self.modo == "tutorial" and pend.jugador != 0) or m.p.ganador is not None:
+                (self.modo in ("tutorial", "ia") and pend.jugador != 0) or m.p.ganador is not None:
             self.mesa.marcar_eleccion(set(), set())
             return
         self.mesa.marcar_eleccion({u for u in pend.datos["opciones"] if self._en_mesa(u)}, set(self.eleccion))
@@ -1135,6 +1292,12 @@ class Ventana(QMainWindow):
         if self.motor is None or self.motor.p.ganador is not None:
             return
         tx = self.tx
+        if self.modo == "ia":
+            if QMessageBox.question(self, tx("rendirse"), tx("ia_rendirse")) == QMessageBox.Yes:
+                self.ia_gen += 1
+                self.motor.aplicar(A.Rendirse(0))
+                self.refrescar()
+            return
         caja = QMessageBox(self)
         caja.setWindowTitle(tx("rendirse"))
         caja.setText(tx("rendirse_pregunta"))
@@ -1154,6 +1317,8 @@ class Ventana(QMainWindow):
             return []
         if self.modo == "tutorial":
             return self.guion.esperadas()
+        if self.modo == "ia" and self.motor.p.quien_decide() != 0:
+            return []
         return self.motor.legales()
 
     def _dibujar_tutorial(self):
@@ -1273,12 +1438,12 @@ class Ventana(QMainWindow):
             return
         menu = QMenu(self)
         tut = self.modo == "tutorial"
-        for a in m.legales():
+        for a in self.acciones_permitidas() if self.modo == "ia" else m.legales():
             if carta.uid in acciones_de_carta(a):
                 act = menu.addAction(describir(self.tx, m, a), lambda acc=a: self.ejecutar(acc))
                 if tut and not self.guion.es_esperada(a):
                     act.setEnabled(False)
-        if m.p.ganador is None and not tut:
+        if m.p.ganador is None and not tut and not (self.modo == "ia" and m.p.quien_decide() != 0):
             if not menu.isEmpty():
                 menu.addSeparator()
             self._ops_manuales(menu.addMenu(self.tx("manual")), carta)

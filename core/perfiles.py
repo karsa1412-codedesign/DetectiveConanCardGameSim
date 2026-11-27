@@ -13,7 +13,7 @@ from pathlib import Path
 
 EVENTOS = ("perfil_creado", "inicio_sesion", "cierre_sesion", "tutorial_recomendado",
            "tutorial_inicio", "tutorial_completado", "tutorial_saltado", "tutorial_abandonado",
-           "partida_inicio", "partida_fin", "partida_abandonada")
+           "partida_inicio", "partida_fin", "partida_abandonada", "partida_ia_inicio", "partida_ia_fin")
 
 
 def ahora() -> str:

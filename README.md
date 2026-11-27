@@ -6,6 +6,10 @@ Es independiente de CardScraper: no comparte código con él.
 
 Estado: **fase 1 en marcha**. El motor aplica el reglamento oficial Ver. 2.6. Hay perfiles de
 usuario, registro de accesos y dos modos de juego: **Tutorial** (partida guiada pregrabada) y
+**Contra el ordenador**: eliges tu mazo, el de la IA, el nivel (Fácil, Normal, Difícil), su estilo
+(equilibrado, agresivo, prudente) y quién empieza. La IA juega limpio: no ve tu mano ni el orden
+de los mazos (core/ia.py).
+
 **Partida local** (dos jugadores en el mismo equipo). Las habilidades de las cartas descargadas se
 interpretan a partir de su texto oficial y se aplican solas; las que aún no se entienden se muestran
 para aplicarlas a mano.
@@ -179,6 +183,8 @@ core/           motor de reglas, sin interfaz
   acciones.py   acciones que envía cada jugador
   reglas.py     el reglamento
   habilidades.py  intérprete: texto japonés de la carta → habilidades (tipo, condiciones, coste, pasos)
+  ia.py         rival por ordenador: reglas (Fácil), valoración de jugadas (Normal), simulaciones
+                con las cartas ocultas imaginadas (Difícil)
   efectos.py    ejecución: una función por cada paso de efecto, cola de disparos, elecciones
   perfiles.py   perfiles de usuario y registro de accesos
   tutorial.py   motor del tutorial pregrabado

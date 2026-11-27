@@ -150,8 +150,8 @@ class PaginaMenu(QWidget):
         lc.addWidget(self.modos)
         self.botones = {}
         for clave, fn in (("tutorial", ventana.iniciar_tutorial), ("local", ventana.iniciar_local),
-                          ("ia", None), ("online", None)):
-            if clave == "ia":
+                          ("ia", ventana.iniciar_ia), ("online", None)):
+            if clave == "online":
                 self.lbl_herr = QLabel()
                 self.lbl_herr.setStyleSheet("font-size:14px;font-weight:bold;margin-top:10px;")
                 lc.addWidget(self.lbl_herr)
@@ -187,8 +187,11 @@ class PaginaMenu(QWidget):
         tx = self.v.tx
         p = self.v.perfiles.perfiles[self.v.perfil]
         self.hola.setText(tx("menu_hola", nombre=p["nombre"]))
-        self.stats.setText(tx("estadisticas", ini=p.get("partidas_iniciadas", 0),
-                              fin=p.get("partidas_terminadas", 0), tut=p.get("tutoriales_completados", 0)))
+        texto = tx("estadisticas", ini=p.get("partidas_iniciadas", 0),
+                   fin=p.get("partidas_terminadas", 0), tut=p.get("tutoriales_completados", 0))
+        if p.get("ia_victorias", 0) or p.get("ia_derrotas", 0):
+            texto += "\n" + tx("estadisticas_ia", g=p.get("ia_victorias", 0), p=p.get("ia_derrotas", 0))
+        self.stats.setText(texto)
         self.modos.setText(tx("menu_modos"))
         self.botones["tutorial"].textos(tx("modo_tutorial"), tx("modo_tutorial_desc"))
         self.botones["local"].textos(tx("modo_local"), tx("modo_local_desc"))
@@ -198,7 +201,7 @@ class PaginaMenu(QWidget):
         self.botones["fundas"].textos(tx("modo_fundas"), tx("modo_fundas_desc", funda=self.v.funda_perfil()))
         self.lbl_herr.setText(tx("menu_herramientas"))
         self.lbl_prox.setText(tx("proximamente"))
-        self.botones["ia"].textos(tx("modo_ia"), tx("proximamente"))
+        self.botones["ia"].textos(tx("modo_ia"), tx("modo_ia_desc"))
         self.botones["online"].textos(tx("modo_online"), tx("proximamente"))
         self.btn_registro.setText(tx("ver_registro"))
         self.btn_perfil.setText(tx("cambiar_perfil"))

@@ -4,7 +4,7 @@ Para publicar una versión nueva: sube VERSION aquí y sube el cambio a la rama 
 GitHub Actions compila el instalador, crea la etiqueta v<VERSION> y lo publica;
 las apps instaladas lo detectan al arrancar.
 """
-VERSION = "0.10.1"
+VERSION = "0.11.0"
 
 # Repositorio de GitHub donde se publican las versiones («usuario/repositorio»).
 # Vacío = no se buscan actualizaciones. Se puede cambiar en config.ini, sección [actualizaciones].
